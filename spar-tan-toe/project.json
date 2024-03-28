@@ -1,0 +1,63 @@
+{
+  "name": "spar-tan-toe",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "./spar-tan-toe/src",
+  "targets": {
+    "build": {
+      "executor": "@analogjs/platform:vite",
+      "outputs": [
+        "{options.outputPath}",
+        "{workspaceRoot}/dist/spar-tan-toe/.nitro",
+        "{workspaceRoot}/dist/spar-tan-toe/ssr",
+        "{workspaceRoot}/dist/spar-tan-toe/analog"
+      ],
+      "options": {
+        "main": "spar-tan-toe/src/main.ts",
+        "configFile": "spar-tan-toe/vite.config.ts",
+        "outputPath": "dist/spar-tan-toe/client",
+        "tsConfig": "spar-tan-toe/tsconfig.app.json"
+      },
+      "defaultConfiguration": "production",
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "sourcemap": false,
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@analogjs/platform:vite-dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "spar-tan-toe:build",
+        "port": 4200
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "spar-tan-toe:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "spar-tan-toe:build:production"
+        }
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "spar-tan-toe:build"
+      }
+    },
+    "test": {
+      "executor": "@analogjs/platform:vitest",
+      "outputs": [
+        "{projectRoot}/coverage"
+      ]
+    }
+  },
+  "tags": []
+}
