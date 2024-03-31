@@ -9,34 +9,33 @@ export default defineConfig(({ mode }) => {
   return {
     root: __dirname,
     publicDir: 'src/public',
-    
+
     ssr: {
-      noExternal: ['@analogjs/trpc','@trpc/server'],
+      noExternal: ['@analogjs/trpc', '@trpc/server'],
     },
-    
+
     build: {
-      outDir: '../dist/./spar-tan-toe/client',
+      outDir: '../../dist/./spar-tan-toe/client',
       reportCompressedSize: true,
-      commonjsOptions: { transformMixedEsModules: true },      
+      commonjsOptions: { transformMixedEsModules: true },
       target: ['es2020'],
     },
     server: {
       fs: {
         allow: ['.'],
       },
-    },    
+    },
     plugins: [
-      
       analog({
         nitro: {
           routeRules: {
             '/': {
               prerender: false,
-            }
-          }
-        }
+            },
+          },
+        },
       }),
-      
+
       nxViteTsPaths(),
       splitVendorChunkPlugin(),
     ],
@@ -47,7 +46,7 @@ export default defineConfig(({ mode }) => {
       include: ['**/*.spec.ts'],
       reporters: ['default'],
       cache: {
-        dir: `../node_modules/.vitest`,
+        dir: `../../node_modules/.vitest`,
       },
     },
     define: {

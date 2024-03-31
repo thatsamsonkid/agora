@@ -5,6 +5,7 @@ import { RouterOutlet } from '@angular/router';
   selector: 'spar-tan-toe-root',
   standalone: true,
   imports: [RouterOutlet],
+  providers: [],
   template: ` <router-outlet></router-outlet> `,
 })
 export class AppComponent {}

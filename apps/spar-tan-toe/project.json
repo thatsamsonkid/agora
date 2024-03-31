@@ -1,22 +1,22 @@
 {
   "name": "spar-tan-toe",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "./spar-tan-toe/src",
+  "sourceRoot": "./apps/spar-tan-toe/src",
   "targets": {
     "build": {
       "executor": "@analogjs/platform:vite",
       "outputs": [
         "{options.outputPath}",
-        "{workspaceRoot}/dist/spar-tan-toe/.nitro",
-        "{workspaceRoot}/dist/spar-tan-toe/ssr",
-        "{workspaceRoot}/dist/spar-tan-toe/analog"
+        "{workspaceRoot}/dist/apps/spar-tan-toe/.nitro",
+        "{workspaceRoot}/dist/apps/spar-tan-toe/ssr",
+        "{workspaceRoot}/dist/apps/spar-tan-toe/analog"
       ],
       "options": {
-        "main": "spar-tan-toe/src/main.ts",
-        "configFile": "spar-tan-toe/vite.config.ts",
-        "outputPath": "dist/spar-tan-toe/client",
-        "tsConfig": "spar-tan-toe/tsconfig.app.json"
+        "main": "apps/spar-tan-toe/src/main.ts",
+        "configFile": "apps/spar-tan-toe/vite.config.ts",
+        "outputPath": "dist/apps/spar-tan-toe/client",
+        "tsConfig": "apps/spar-tan-toe/tsconfig.app.json"
       },
       "defaultConfiguration": "production",
       "configurations": {
@@ -54,9 +54,7 @@
     },
     "test": {
       "executor": "@analogjs/platform:vitest",
-      "outputs": [
-        "{projectRoot}/coverage"
-      ]
+      "outputs": ["{projectRoot}/coverage"]
     }
   },
   "tags": []

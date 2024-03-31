@@ -6,9 +6,6 @@ import { AnalogWelcomeComponent } from './analog-welcome.component';
   selector: 'spar-tan-toe-home',
   standalone: true,
   imports: [AnalogWelcomeComponent],
-  template: `
-     <spar-tan-toe-analog-welcome/>
-  `,
+  template: ` <spar-tan-toe-analog-welcome /> `,
 })
-export default class HomeComponent {
-}
+export default class HomeComponent {}

@@ -3,7 +3,7 @@ import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
 import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import postgres from 'postgres';
 
-export const notes = pgTable('note', {
+export const notes = pgTable('', {
   id: serial('id').primaryKey(),
   note: text('note').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
