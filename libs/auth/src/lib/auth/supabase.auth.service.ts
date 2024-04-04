@@ -1,9 +1,13 @@
 import { Injectable, OnDestroy, computed, inject, signal } from '@angular/core';
 import {
+  AuthError,
+  AuthResponse,
   createClient,
+  OAuthResponse,
   Session,
   Subscription,
   SupabaseClient,
+  UserResponse,
 } from '@supabase/supabase-js';
 import { SUPABASE_PROJECT, SUPABASE_PUB_KEY } from './supabase-token';
 
@@ -43,12 +47,32 @@ export class SupabaseAuth implements OnDestroy {
     this.sessionSub = subscription;
   }
 
-  async signInAnon() {
-    const res = await this._supabase.auth.signInAnonymously();
+  /**
+   * Sign Up Methods ----------------------------
+   */
+
+  async signUpWithEmail({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<AuthResponse> {
+    const res = await this._supabase.auth.signUp({
+      email,
+      password,
+      // options: {
+      //   emailRedirectTo: 'https://example.com/welcome',
+      // },
+    });
     return res;
   }
 
-  async convertToPermanentUserEmailPhone(id: string) {
+  /**
+   * Sign Up Converter Methods ----------------------------
+   */
+
+  async convertToPermanentUserEmailPhone(id: string): Promise<UserResponse> {
     // Might need to figure out what form of ID was given
     const res = await this._supabase.auth.updateUser({
       email: 'example@email.com',
@@ -56,10 +80,45 @@ export class SupabaseAuth implements OnDestroy {
     return res;
   }
 
-  async convertToPermanentUserOAuthProvider(provider: OAuthProviders) {
+  async convertToPermanentUserOAuthProvider(
+    provider: OAuthProviders
+  ): Promise<OAuthResponse> {
     const res = await this._supabase.auth.linkIdentity({
       provider,
     });
+    return res;
+  }
+
+  /**
+   * Sign In Methods ----------------------------
+   */
+
+  async signInAnon(): Promise<AuthResponse> {
+    const res = await this._supabase.auth.signInAnonymously();
+    return res;
+  }
+
+  async signInWithGoogle(): Promise<OAuthResponse> {
+    const res = await this._supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    });
+    return res;
+  }
+
+  /**
+   * Sign Out Methods ----------------------------
+   */
+
+  async signOut(): Promise<{
+    error: AuthError | null;
+  }> {
+    const res = await this._supabase.auth.signOut();
     return res;
   }
 

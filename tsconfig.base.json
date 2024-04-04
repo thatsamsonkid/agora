@@ -15,7 +15,13 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@agora/auth": ["libs/auth/src/index.ts"]
+      "@agora/auth": ["libs/auth/src/index.ts"],
+      "@spartan-ng/ui-button-helm": ["libs/ui/ui-button-helm/src/index.ts"],
+      "@spartan-ng/ui-card-helm": ["libs/ui/ui-card-helm/src/index.ts"],
+      "@spartan-ng/ui-icon-helm": ["libs/ui/ui-icon-helm/src/index.ts"],
+      "@spartan-ng/ui-skeleton-helm": ["libs/ui/ui-skeleton-helm/src/index.ts"],
+      "@spartan-ng/ui-sonner-helm": ["libs/ui/ui-sonner-helm/src/index.ts"],
+      "@spartan-ng/ui-spinner-helm": ["libs/ui/ui-spinner-helm/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

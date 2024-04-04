@@ -4,7 +4,7 @@ import { provideClientHydration } from '@angular/platform-browser';
 import { provideFileRouter } from '@analogjs/router';
 
 import { provideTrpcClient } from '../trpc-client';
-import { SUPABASE_PROJECT, SUPABASE_PUB_KEY } from 'libs/auth/src';
+import { SUPABASE_PROJECT, SUPABASE_PUB_KEY, SupabaseAuth } from '@agora/auth';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,7 +12,11 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideHttpClient(withFetch()),
     provideTrpcClient(),
-    { provide: SUPABASE_PROJECT, useValue: process.env['DATABASE_REF'] },
-    { provide: SUPABASE_PUB_KEY, useValue: process.env['DATABASE_PUB_KEY'] },
+    { provide: SUPABASE_PROJECT, useValue: import.meta.env.VITE_DATABASE_REF },
+    {
+      provide: SUPABASE_PUB_KEY,
+      useValue: import.meta.env.VITE_DATABASE_PUB_KEY,
+    },
+    SupabaseAuth,
   ],
 };
