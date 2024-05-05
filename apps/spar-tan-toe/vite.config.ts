@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
       outDir: '../../dist/./spar-tan-toe/client',
       reportCompressedSize: true,
       commonjsOptions: { transformMixedEsModules: true },
-      target: ['es2020'],
+      target: ['es2022'],
     },
     server: {
       fs: {

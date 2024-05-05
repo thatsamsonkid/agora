@@ -1,16 +1,11 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
-
-export const notes = pgTable('', {
-  id: serial('id').primaryKey(),
-  note: text('note').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-});
-
-export type Note = InferSelectModel<typeof notes>;
-export type NewNote = InferInsertModel<typeof notes>;
 
 const client = postgres(process.env['DATABASE_URL'] ?? '');
 export const db = drizzle(client);
+
+export const migrateToLatest = async () => {
+  await migrate(db, { migrationsFolder: 'drizzle' });
+  await client.end();
+};
