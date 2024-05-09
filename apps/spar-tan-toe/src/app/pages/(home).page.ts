@@ -4,8 +4,8 @@ import { SharedModule } from '../shared/shared.module';
 import { Router, RouterLink } from '@angular/router';
 import { HeaderComponent } from '../core/components/header.component';
 import { GameManagerService } from '../core/services/game-manager.service';
-import { injectTrpcClient } from '../../trpc-client';
-import { take } from 'rxjs';
+// import { injectTrpcClient } from '../../trpc-client';
+// import { take } from 'rxjs';
 
 @Component({
   selector: 'spar-tan-toe-home',

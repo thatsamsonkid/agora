@@ -1,9 +1,9 @@
 import { SupabaseAuth } from '@agora/supabase/auth';
 import { Component, effect, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
-import { map } from 'rxjs';
 
 @Component({
+  selector: 'auth-page',
   standalone: true,
   imports: [RouterOutlet],
   template: ` <router-outlet></router-outlet> `,
