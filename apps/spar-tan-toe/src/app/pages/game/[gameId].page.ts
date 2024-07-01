@@ -1,21 +1,21 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { filter, map, take } from 'rxjs';
-import { SharedModule } from '../../shared/shared.module';
-import { GameManagerService } from '../../core/services/game-manager.service';
-import { GameboardCellComponent } from '../../components/gameboard-cell.component';
-import { RouteMeta } from '@analogjs/router';
-import { anonAuthGuard } from '../../guards/anon-auth.guard';
-import { JsonPipe } from '@angular/common';
+import { RouteMeta } from '@analogjs/router'
+import { JsonPipe } from '@angular/common'
+import { Component, OnDestroy, OnInit, inject } from '@angular/core'
+import { ActivatedRoute } from '@angular/router'
+import { filter, map, take } from 'rxjs'
+import { GameboardCellComponent } from '../../components/gameboard-cell.component'
+import { GameManagerService } from '../../core/services/game-manager.service'
+import { anonAuthGuard } from '../../guards/anon-auth.guard'
+import { SharedModule } from '../../shared/shared.module'
 
 export const routeMeta: RouteMeta = {
-  title: 'About Analog',
-  // canActivate: [anonAuthGuard],
-};
+	title: 'About Analog',
+	// canActivate: [anonAuthGuard],
+}
 
 @Component({
-  selector: 'app-game-id-page',
-  template: `
+	selector: 'app-game-id-page',
+	template: `
     <div class="grid grid-rows-3 divide-y border mx-6 rounded-sm">
       @for(row of gameManager.gameboard(); track $index){
       <div class="grid grid-cols-3 divide-x">
@@ -33,31 +33,29 @@ export const routeMeta: RouteMeta = {
       }
     </div>
   `,
-  imports: [SharedModule, GameboardCellComponent, JsonPipe],
-  standalone: true,
+	imports: [SharedModule, GameboardCellComponent, JsonPipe],
+	standalone: true,
 })
 export default class GameIdPageComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
-  protected readonly gameManager = inject(GameManagerService);
-  readonly gameId$ = this.route.paramMap.pipe(
-    map((params) => params.get('gameId'))
-  );
+	private readonly route = inject(ActivatedRoute)
+	protected readonly gameManager = inject(GameManagerService)
+	readonly gameId$ = this.route.paramMap.pipe(map((params) => params.get('gameId')))
 
-  ngOnInit(): void {
-    // Only connect if gameChannel not already setup
-    if (!this.gameManager.gameChannel) {
-      this.gameId$
-        .pipe(
-          take(1),
-          filter((val) => !!val)
-        )
-        .subscribe(async (gameId: string | null) => {
-          await this.gameManager.connectToGame(gameId);
-        });
-    }
-  }
+	ngOnInit(): void {
+		// Only connect if gameChannel not already setup
+		if (!this.gameManager.gameChannel) {
+			this.gameId$
+				.pipe(
+					take(1),
+					filter((val) => !!val),
+				)
+				.subscribe(async (gameId: string | null) => {
+					await this.gameManager.connectToGame(gameId)
+				})
+		}
+	}
 
-  selectCell(coordinates: { x: number; y: number }): void {
-    this.gameManager.takeTurn(coordinates);
-  }
+	selectCell(coordinates: { x: number; y: number }): void {
+		this.gameManager.takeTurn(coordinates)
+	}
 }

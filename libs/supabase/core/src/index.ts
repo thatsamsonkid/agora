@@ -1,2 +1,2 @@
-export * from './lib/supabase.service';
-export * from './lib/supabase-tokens';
+export * from './lib/supabase.service'
+export * from './lib/supabase-tokens'

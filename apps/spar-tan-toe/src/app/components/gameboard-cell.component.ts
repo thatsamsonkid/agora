@@ -1,17 +1,9 @@
-import {
-  Component,
-  OnInit,
-  effect,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { Component, OnInit, effect, inject, input, output, signal } from '@angular/core'
 // import { GameManagerService } from '../core/services/game-manager.service';
 
 @Component({
-  selector: 'gb-cell',
-  template: `<button
+	selector: 'gb-cell',
+	template: `<button
     class="w-full h-full"
     [disabled]="disabled()"
     (click)="select($event)"
@@ -28,43 +20,43 @@ import {
 
     {{ coordinates()?.x }}, {{ coordinates()?.y }}
   </button>`,
-  standalone: true,
-  host: {
-    class: 'contents',
-  },
+	standalone: true,
+	host: {
+		class: 'contents',
+	},
 })
 export class GameboardCellComponent implements OnInit {
-  //   protected readonly gameManager = inject(GameManagerService);
+	//   protected readonly gameManager = inject(GameManagerService);
 
-  coordinates = input<{ x: number; y: number }>();
-  disabled = input();
-  player = input<number>();
-  value = input();
+	coordinates = input<{ x: number; y: number }>()
+	disabled = input()
+	player = input<number>()
+	value = input()
 
-  buttonClick = output<MouseEvent>();
+	buttonClick = output<MouseEvent>()
 
-  isHovered = signal(false);
+	isHovered = signal(false)
 
-  constructor() {
-    // effect(() => {
-    //   console.log(this.value());
-    // });
-  }
+	constructor() {
+		// effect(() => {
+		//   console.log(this.value());
+		// });
+	}
 
-  ngOnInit(): void {}
+	ngOnInit(): void {}
 
-  select(event: MouseEvent): void {
-    // console.log('making selection');
-    this.buttonClick.emit(event);
-  }
+	select(event: MouseEvent): void {
+		// console.log('making selection');
+		this.buttonClick.emit(event)
+	}
 
-  onMouseEnter(): void {
-    this.isHovered.set(true);
-    // console.log('Mouse is over the button');
-  }
+	onMouseEnter(): void {
+		this.isHovered.set(true)
+		// console.log('Mouse is over the button');
+	}
 
-  onMouseLeave(): void {
-    this.isHovered.set(false);
-    // console.log('Mouse has left the button');
-  }
+	onMouseLeave(): void {
+		this.isHovered.set(false)
+		// console.log('Mouse has left the button');
+	}
 }

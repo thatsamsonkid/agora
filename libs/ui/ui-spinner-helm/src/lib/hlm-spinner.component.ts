@@ -1,36 +1,36 @@
-import { Component, computed, input, Input, signal } from '@angular/core';
-import { hlm } from '@spartan-ng/ui-core';
-import { cva, VariantProps } from 'class-variance-authority';
-import { ClassValue } from 'clsx';
+import { Component, Input, computed, input, signal } from '@angular/core'
+import { hlm } from '@spartan-ng/ui-core'
+import { VariantProps, cva } from 'class-variance-authority'
+import { ClassValue } from 'clsx'
 
 export const spinnerVariants = cva('inline-block', {
-  variants: {
-    variant: {
-      default: 'animate-spin [&>svg]:text-foreground/30 [&>svg]:fill-accent',
-    },
-    size: {
-      xs: 'h-4 w-4',
-      sm: 'h-6 w-6',
-      default: 'w-8 h-8 ',
-      lg: 'w-12 h-12',
-      xl: 'w-16 h-16',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-    size: 'default',
-  },
-});
-export type SpinnerVariants = VariantProps<typeof spinnerVariants>;
+	variants: {
+		variant: {
+			default: 'animate-spin [&>svg]:text-foreground/30 [&>svg]:fill-accent',
+		},
+		size: {
+			xs: 'h-4 w-4',
+			sm: 'h-6 w-6',
+			default: 'w-8 h-8 ',
+			lg: 'w-12 h-12',
+			xl: 'w-16 h-16',
+		},
+	},
+	defaultVariants: {
+		variant: 'default',
+		size: 'default',
+	},
+})
+export type SpinnerVariants = VariantProps<typeof spinnerVariants>
 
 @Component({
-  selector: 'hlm-spinner',
-  standalone: true,
-  host: {
-    '[class]': '_computedClass()',
-    role: 'status',
-  },
-  template: `
+	selector: 'hlm-spinner',
+	standalone: true,
+	host: {
+		'[class]': '_computedClass()',
+		role: 'status',
+	},
+	template: `
     <svg
       aria-hidden="true"
       class="animate-spin"
@@ -51,14 +51,12 @@ export type SpinnerVariants = VariantProps<typeof spinnerVariants>;
   `,
 })
 export class HlmSpinnerComponent {
-  private readonly _size = signal<SpinnerVariants['size']>('default');
-  @Input()
-  set size(value: SpinnerVariants['size']) {
-    this._size.set(value);
-  }
+	private readonly _size = signal<SpinnerVariants['size']>('default')
+	@Input()
+	set size(value: SpinnerVariants['size']) {
+		this._size.set(value)
+	}
 
-  public readonly userClass = input<ClassValue>('', { alias: 'class' });
-  protected _computedClass = computed(() =>
-    hlm(spinnerVariants({ size: this._size() }), this.userClass())
-  );
+	public readonly userClass = input<ClassValue>('', { alias: 'class' })
+	protected _computedClass = computed(() => hlm(spinnerVariants({ size: this._size() }), this.userClass()))
 }

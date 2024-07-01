@@ -1,7 +1,7 @@
-import { computed, Directive, input, Input, signal } from '@angular/core';
-import { hlm } from '@spartan-ng/ui-core';
-import { cva, VariantProps } from 'class-variance-authority';
-import { ClassValue } from 'clsx';
+import { Directive, Input, computed, input, signal } from '@angular/core'
+import { hlm } from '@spartan-ng/ui-core'
+import { VariantProps, cva } from 'class-variance-authority'
+import { ClassValue } from 'clsx'
 
 export const buttonVariants = cva(
 	'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
@@ -27,8 +27,8 @@ export const buttonVariants = cva(
 			size: 'default',
 		},
 	},
-);
-export type ButtonVariants = VariantProps<typeof buttonVariants>;
+)
+export type ButtonVariants = VariantProps<typeof buttonVariants>
 
 @Directive({
 	selector: '[hlmBtn]',
@@ -38,26 +38,26 @@ export type ButtonVariants = VariantProps<typeof buttonVariants>;
 	},
 })
 export class HlmButtonDirective {
-	public readonly userClass = input<ClassValue>('', { alias: 'class' });
-	private readonly _settableClass = signal<ClassValue>('');
+	public readonly userClass = input<ClassValue>('', { alias: 'class' })
+	private readonly _settableClass = signal<ClassValue>('')
 
 	protected _computedClass = computed(() =>
 		hlm(buttonVariants({ variant: this._variant(), size: this._size() }), this._settableClass(), this.userClass()),
-	);
+	)
 
 	setClass(value: ClassValue) {
-		this._settableClass.set(value);
+		this._settableClass.set(value)
 	}
 
-	private readonly _variant = signal<ButtonVariants['variant']>('default');
+	private readonly _variant = signal<ButtonVariants['variant']>('default')
 	@Input()
 	set variant(variant: ButtonVariants['variant']) {
-		this._variant.set(variant);
+		this._variant.set(variant)
 	}
 
-	private readonly _size = signal<ButtonVariants['size']>('default');
+	private readonly _size = signal<ButtonVariants['size']>('default')
 	@Input()
 	set size(size: ButtonVariants['size']) {
-		this._size.set(size);
+		this._size.set(size)
 	}
 }
