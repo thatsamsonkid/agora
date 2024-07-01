@@ -1,4 +1,5 @@
 import {
+  DestroyRef,
   Injectable,
   OnDestroy,
   computed,
@@ -6,11 +7,24 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { injectTrpcClient } from '../../../trpc-client';
-import { Observable, map, take, tap } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  firstValueFrom,
+  map,
+  of,
+  take,
+  takeUntil,
+  tap,
+  throwError,
+} from 'rxjs';
 import { RealtimeChannel, RealtimePresenceState } from '@supabase/supabase-js';
 import { SupabaseClientService } from '@agora/supabase/core';
 import { SupabaseAuth } from '@agora/supabase/auth';
+import { moves } from 'apps/spar-tan-toe/drizzle/schema';
+import { Router } from '@angular/router';
 
 interface game {
   gameReady: boolean;
@@ -23,11 +37,15 @@ interface game {
 })
 export class GameManagerService implements OnDestroy {
   private _supabase = inject(SupabaseClientService);
+  private _authService = inject(SupabaseAuth);
+  private _router = inject(Router);
   private _trpc = injectTrpcClient();
-  private _gameRoom!: RealtimeChannel;
+  private destroyRef = inject(DestroyRef);
 
-  userId = 'thatsamsonkid';
+  // Add ability for local play, no need to connect to db or auth as anon,
+  // just keep game state local
 
+  gameId = signal<string | null>(null);
   game = signal({
     gameReady: false,
     playerTurn: '',
@@ -40,14 +58,7 @@ export class GameManagerService implements OnDestroy {
 
   gameboard = computed(() => this.game().gameboard);
 
-  // private _auth = inject(SupabaseAuth);
-  // protected isSignedIn = computed(() => this._auth.session());
-
-  constructor() {
-    effect(() => {
-      console.log('MM', this.gameboard());
-    });
-  }
+  gameChannel!: RealtimeChannel;
 
   startNewGame(): Observable<{ id: string }> {
     // 1. create a new game in games table
@@ -57,80 +68,69 @@ export class GameManagerService implements OnDestroy {
     return this._trpc.game.create.mutate({}).pipe(
       take(1),
       map((res) => res[0]),
-      tap(({ id }) => this.createSupabaseChannel(id))
+      tap(({ id }) => {
+        this.gameId.set(id);
+        this.createSupabaseChannel(id);
+      })
     );
   }
 
-  connectToGame(gameId: string | null) {
-    if (!this._gameRoom && gameId) {
-      // TODO: We should validate if game exist in database
+  async connectToGame(gameId: string | null) {
+    try {
+      if (!gameId) {
+        throw Error('Game not found');
+      }
+
+      const { data, error } = await firstValueFrom(this.findGame(gameId));
+      if (error) {
+        throw Error('Game not found');
+      }
+      this.gameId.set(gameId);
       this.createSupabaseChannel(gameId);
+      // this.findGame(gameId)
+      //   .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      //   .subscribe({
+      //     next: () => {
+      //       this.gameId.set(gameId);
+      //       this.createSupabaseChannel(gameId);
+      //     },
+      //     error: (e) => {
+      //       throw Error('Game not found');
+      //     },
+      //   });
+    } catch (e) {
+      this._router.navigate(['/'], {
+        state: { error: 'Failed to fetch item' },
+      });
     }
   }
 
   createSupabaseChannel(gameId: string): void {
     try {
-      this._gameRoom = this._supabase.client.channel(gameId, {
-        config: {
-          presence: { key: this.userId },
-        },
-      });
-
-      this._gameRoom
-        .on('presence', { event: 'sync' }, () => {
-          const newState = this._gameRoom.presenceState<game>();
-          // console.log(newState['thatsamsonkid']?.[0]);
-          if (newState['thatsamsonkid']) {
-            const [playerState] = newState['thatsamsonkid'];
-            if (playerState && playerState.gameState) {
-              // console.log('UU', playerState.gameState);
-              this.game.update((state) => ({
-                ...state,
-                gameboard: [...playerState.gameState],
-              }));
+      this.gameChannel = this._supabase.client
+        .channel(gameId)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'moves',
+            filter: `game_id=eq.${gameId}`,
+          },
+          (payload) => {
+            console.log('REALTY', payload);
+            // TODO: We may want to limit doing this only for opp since player turn is already eager updating the board
+            console.log(payload.new.row, payload.new.column);
+            console.log(
+              this.game().gameboard[payload.new.row][payload.new.column]
+            );
+            if (!this.game().gameboard[payload.new.row][payload.new.column]) {
+              console.log('Updating Gameboard');
+              this.updateGameboard(payload.new.row, payload.new.column);
             }
           }
-        })
-        // .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        //   console.log('join', key, newPresences);
-        //   // if (newState && !newState.gameState) {
-        //   //   this._gameRoom.track({
-        //   //     gameState: [
-        //   //       ['', '', ''],
-        //   //       ['', '', ''],
-        //   //       ['', '', ''],
-        //   //     ],
-        //   //   });
-        //   //   // this._gameRoom.send({
-        //   //   //   event: 'game_init',
-        //   //   //   type: 'presence',
-        //   //   //   payload: ,
-        //   //   // });
-        //   // }
-        // })
-        // .on(
-        //   'presence',
-        //   { event: 'leave' },
-        //   ({ key, currentPresences, leftPresences }) => {
-        //     // console.log('leave', key, leftPresences);
-        //     console.log('leave', key, currentPresences, leftPresences);
-        //   }
-        // )
-        .subscribe((status) => {
-          if (status !== 'SUBSCRIBED') {
-            return;
-          }
-          console.log(status);
-          if (status === 'SUBSCRIBED') {
-            console.log('boom bang');
-            // this._gameRoom.track({ user_name: 'user123' });
-
-            this._gameRoom.track({
-              event: 'game_init',
-              gameState: this.gameboard(),
-            });
-          }
-        });
+        )
+        .subscribe();
     } catch (e) {
       console.error(e);
     }
@@ -139,14 +139,43 @@ export class GameManagerService implements OnDestroy {
   takeTurn({ x, y }: { x: number; y: number }) {
     // consider updating only a copy and only updating from sync
     // to ensure a matching state with ephemeral state
-    const nextGameState = this.updateGameboard(x, y);
-    this._gameRoom.track({
-      gameState: nextGameState,
-    });
+    // const nextGameState = this.updateGameboard(x, y);
+    // this.game.update((state) => ({
+    //   ...state,
+    //   gameboard: nextGameState,
+    // }));
+
+    // Eager update gameboard
+    // If update fails revert to previous game state
+    this.updateMovesTable(x, y);
+    //   const { error } = await supabase
+    // .from('countries')
+    // .insert({ id: 1, name: 'Denmark' })
+    //   this._supabase.client.from('moves').insert()
+    // this._gameRoom.track({
+    //   gameState: nextGameState,
+    // });
+  }
+
+  private findGame(gameId: string): Observable<any> {
+    return this._trpc.game.select.query({ id: gameId }).pipe(
+      map((response) => {
+        if (!response?.[0]?.id) {
+          throw new Error('Game not found');
+        }
+        return { data: response[0], error: null };
+      }),
+      catchError((error) => of({ data: null, error: 'Game not found' }))
+    );
   }
 
   private updateGameboard(x: number, y: number): string[][] {
-    return this.update2DArray(this.gameboard(), x, y, 'X');
+    const nextGameState = this.update2DArray(this.gameboard(), x, y, 'X');
+    this.game.update((state) => ({
+      ...state,
+      gameboard: nextGameState,
+    }));
+    return nextGameState;
   }
 
   private update2DArray(
@@ -167,18 +196,32 @@ export class GameManagerService implements OnDestroy {
       }
       return [...row];
     });
-
+    console.log(newArray);
     return newArray;
   }
 
-  leave(): void {
-    this._gameRoom.unsubscribe();
+  private updateMovesTable(x: number, y: number): void {
+    const gameId = this.gameId();
+    // const playerId = this._authService.session()?.user.id;
+    const playerId = '65f2d3f8-ff5d-4a71-bd15-d49dc92c2d76';
+    console.log(gameId, playerId);
+    if (playerId && gameId) {
+      this._trpc.moves.create
+        .mutate({
+          gameId,
+          playerId,
+          column: y,
+          row: x,
+          symbol: 0,
+        })
+        .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+        .subscribe();
+    }
   }
 
   ngOnDestroy(): void {
-    if (this._gameRoom) {
-      this._gameRoom.untrack();
-      this._gameRoom.unsubscribe();
+    if (this.gameChannel) {
+      this.gameChannel.unsubscribe();
     }
   }
 }

@@ -1,6 +1,6 @@
 import { SupabaseAuth } from '@agora/supabase/auth';
 import { JsonPipe } from '@angular/common';
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { SharedModule } from '../../shared/shared.module';
 
 @Component({
@@ -9,7 +9,7 @@ import { SharedModule } from '../../shared/shared.module';
   imports: [JsonPipe, SharedModule],
   template: ` <header class="flex justify-between px-4 py-5">
     <h1>Spar-tan-toe</h1>
-    @if(isSignedIn()){
+    @if(isSignedIn() && !isAnon()){
 
     <hlm-avatar variant="medium">
       <img
@@ -22,14 +22,11 @@ import { SharedModule } from '../../shared/shared.module';
     }
   </header>`,
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   private _auth = inject(SupabaseAuth);
   protected isSignedIn = computed(() => this._auth.session());
+  protected isAnon = computed(() => this._auth.user()?.is_anonymous);
   protected profilePic = computed(
     () => this.isSignedIn()?.user?.user_metadata.picture
   );
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

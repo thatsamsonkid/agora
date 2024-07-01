@@ -22,8 +22,9 @@ export class SupabaseAuth implements OnDestroy {
   private _supabase = inject(SupabaseClientService);
 
   public session = computed(() => this._session());
-  public user = computed(() => this._session());
+  public user = computed(() => this._session()?.user);
   public isAuthenticated = computed(() => !!this._session());
+  public isAnonymous = computed(() => this.user()?.is_anonymous);
 
   sessionSub!: Subscription;
 

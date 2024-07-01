@@ -18,7 +18,6 @@ import {
     (mouseenter)="onMouseEnter()"
     (mouseleave)="onMouseLeave()"
   >
-    {{ value() }}
     @if(value() === "X"){
     <span>X</span>
     } @else {

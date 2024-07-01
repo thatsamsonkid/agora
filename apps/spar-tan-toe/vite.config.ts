@@ -20,22 +20,24 @@ export default defineConfig(({ mode }) => {
       commonjsOptions: { transformMixedEsModules: true },
       target: ['es2022'],
     },
+    optimizeDeps: {
+      include: [
+        '@supabase/supabase-js',
+        '@spartan-ng/ui-core',
+        'class-variance-authority',
+        '@spartan-ng/ui-avatar-brain',
+      ],
+    },
+    resolve: {
+      mainFields: ['browser', 'module'],
+    },
     server: {
       fs: {
         allow: ['.'],
       },
     },
     plugins: [
-      analog({
-        nitro: {
-          routeRules: {
-            '/': {
-              prerender: false,
-            },
-          },
-        },
-      }),
-
+      analog({ ssr: false }),
       nxViteTsPaths(),
       splitVendorChunkPlugin(),
     ],

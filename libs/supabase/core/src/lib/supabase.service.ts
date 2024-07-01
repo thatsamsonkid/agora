@@ -13,7 +13,9 @@ export class SupabaseClientService {
 
   constructor() {
     this._supabase = createClient(
-      `https://${this._SUPABASE_PROJECT}.supabase.co`,
+      // `https://${this._SUPABASE_PROJECT}.supabase.co`,
+      // this._SUPABASE_PUB_KEY
+      `http://localhost:54321`,
       this._SUPABASE_PUB_KEY
     );
   }
