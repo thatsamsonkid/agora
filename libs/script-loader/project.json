@@ -28,7 +28,6 @@
 			"options": {
 				"jestConfig": "libs/script-loader/jest.config.ts"
 			}
-		},
-
+		}
 	}
 }

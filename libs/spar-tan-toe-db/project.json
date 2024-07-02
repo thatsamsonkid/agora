@@ -12,7 +12,6 @@
 			"options": {
 				"jestConfig": "libs/spar-tan-toe-db/jest.config.ts"
 			}
-		},
-
+		}
 	}
 }

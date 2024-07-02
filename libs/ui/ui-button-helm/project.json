@@ -28,7 +28,6 @@
 			"options": {
 				"jestConfig": "libs/ui/ui-button-helm/jest.config.ts"
 			}
-		},
-
+		}
 	}
 }

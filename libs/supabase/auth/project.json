@@ -28,7 +28,6 @@
 			"options": {
 				"jestConfig": "libs/supabase/auth/jest.config.ts"
 			}
-		},
-
+		}
 	}
 }
