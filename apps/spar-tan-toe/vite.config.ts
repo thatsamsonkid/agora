@@ -2,7 +2,7 @@
 
 import analog from '@analogjs/platform'
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin'
-import { Plugin, defineConfig, splitVendorChunkPlugin } from 'vite'
+import { defineConfig, splitVendorChunkPlugin } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => {
 				'@spartan-ng/ui-core',
 				'class-variance-authority',
 				'@spartan-ng/ui-avatar-brain',
+				'ngx-sonner',
 			],
 		},
 		resolve: {
@@ -44,7 +45,7 @@ export default defineConfig(({ mode }) => {
 			include: ['**/*.spec.ts'],
 			reporters: ['default'],
 			cache: {
-				dir: `../../node_modules/.vitest`,
+				dir: '../../node_modules/.vitest',
 			},
 		},
 		define: {
