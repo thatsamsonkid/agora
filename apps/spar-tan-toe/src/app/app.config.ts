@@ -1,6 +1,6 @@
 import { provideFileRouter } from '@analogjs/router'
 import { provideHttpClient, withFetch } from '@angular/common/http'
-import { ApplicationConfig } from '@angular/core'
+import { type ApplicationConfig, provideExperimentalZonelessChangeDetection } from '@angular/core'
 import { provideClientHydration } from '@angular/platform-browser'
 
 import { ScriptLoaderService } from '@agora/script-loader'
@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
 		provideClientHydration(),
 		provideHttpClient(withFetch()),
 		provideTrpcClient(),
-
+		provideExperimentalZonelessChangeDetection(),
 		// Custom providers
 		ScriptLoaderService,
 		{ provide: SUPABASE_PROJECT, useValue: import.meta.env.VITE_DATABASE_REF },
