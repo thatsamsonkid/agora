@@ -29,8 +29,6 @@
 				"jestConfig": "libs/supabase/core/jest.config.ts"
 			}
 		},
-		"lint": {
-			"executor": "@nx/eslint:lint"
-		}
+
 	}
 }

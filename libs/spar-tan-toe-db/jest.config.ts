@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
 	displayName: 'spar-tan-toe-db',
 	preset: '../../jest.preset.js',

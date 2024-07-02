@@ -3,7 +3,6 @@ import { take } from 'rxjs/operators'
 import { GoogleAuthService } from './google-auth.service'
 
 @Directive({
-	// eslint-disable-next-line @angular-eslint/directive-selector
 	selector: 'google-signin-button',
 	standalone: true,
 })

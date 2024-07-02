@@ -29,8 +29,6 @@
 				"jestConfig": "libs/ui/ui-sonner-helm/jest.config.ts"
 			}
 		},
-		"lint": {
-			"executor": "@nx/eslint:lint"
-		}
+
 	}
 }

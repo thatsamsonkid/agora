@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
 	displayName: 'ui-ui-button-helm',
 	preset: '../../../jest.preset.js',

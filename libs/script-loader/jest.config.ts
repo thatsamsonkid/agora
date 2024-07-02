@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
 	displayName: 'script-loader',
 	preset: '../../jest.preset.js',

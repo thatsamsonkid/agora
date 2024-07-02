@@ -29,8 +29,6 @@
 				"jestConfig": "libs/script-loader/jest.config.ts"
 			}
 		},
-		"lint": {
-			"executor": "@nx/eslint:lint"
-		}
+
 	}
 }

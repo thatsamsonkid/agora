@@ -1,6 +1,5 @@
 {
   "editor.defaultFormatter": "biomejs.biome",
-  "eslint.format.enable": true,
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },

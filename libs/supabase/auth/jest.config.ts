@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
 	displayName: 'supabase-auth',
 	preset: '../../../jest.preset.js',
