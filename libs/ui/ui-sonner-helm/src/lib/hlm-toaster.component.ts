@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, booleanAttribute, input, numberAttribute } from '@angular/core'
-import { NgxSonnerToaster, ToasterProps } from 'ngx-sonner'
+import { NgxSonnerToaster, type ToasterProps } from 'ngx-sonner'
 
 @Component({
 	selector: 'hlm-toaster',

@@ -1,6 +1,8 @@
 import 'zone.js/node'
 import '@angular/platform-server/init'
 
+import { provideServerContext } from '@analogjs/router/server'
+import type { ServerContext } from '@analogjs/router/tokens'
 import { enableProdMode } from '@angular/core'
 import { bootstrapApplication } from '@angular/platform-browser'
 import { renderApplication } from '@angular/platform-server'
@@ -14,10 +16,11 @@ if (import.meta.env.PROD) {
 
 const bootstrap = () => bootstrapApplication(AppComponent, config)
 
-export default async function render(url: string, document: string) {
+export default async function render(url: string, document: string, serverContext: ServerContext) {
 	const html = await renderApplication(bootstrap, {
 		document,
 		url,
+		platformProviders: [provideServerContext(serverContext)],
 	})
 	return html
 }

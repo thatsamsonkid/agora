@@ -1,4 +1,20 @@
-import { bigint, integer, pgTable, primaryKey, serial, smallint, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import {
+	bigint,
+	integer,
+	pgSchema,
+	pgTable,
+	primaryKey,
+	serial,
+	smallint,
+	timestamp,
+	uuid,
+	varchar,
+} from 'drizzle-orm/pg-core'
+
+const authSchema = pgSchema('auth')
+export const users = authSchema.table('users', {
+	id: uuid('id').primaryKey(),
+})
 
 export const profile = pgTable('profile', {
 	id: uuid('id')

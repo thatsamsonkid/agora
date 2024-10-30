@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject, input, output, signal } from '@angular/core'
+import { Component, input, output, signal } from '@angular/core'
 // import { GameManagerService } from '../core/services/game-manager.service';
 
 @Component({
@@ -7,8 +7,8 @@ import { Component, OnInit, effect, inject, input, output, signal } from '@angul
     class="w-full h-full"
     [disabled]="disabled()"
     (click)="select($event)"
-    (mouseenter)="onMouseEnter()"
-    (mouseleave)="onMouseLeave()"
+    (mouseenter)="mouseEnter()"
+    (mouseleave)="mouseLeave()"
   >
     @if(value() === "X"){
     <span>X</span>
@@ -25,9 +25,7 @@ import { Component, OnInit, effect, inject, input, output, signal } from '@angul
 		class: 'contents',
 	},
 })
-export class GameboardCellComponent implements OnInit {
-	//   protected readonly gameManager = inject(GameManagerService);
-
+export class GameboardCellComponent {
 	coordinates = input<{ x: number; y: number }>()
 	disabled = input()
 	player = input<number>()
@@ -37,25 +35,17 @@ export class GameboardCellComponent implements OnInit {
 
 	isHovered = signal(false)
 
-	constructor() {
-		// effect(() => {
-		//   console.log(this.value());
-		// });
-	}
-
-	ngOnInit(): void {}
-
 	select(event: MouseEvent): void {
 		// console.log('making selection');
 		this.buttonClick.emit(event)
 	}
 
-	onMouseEnter(): void {
+	mouseEnter(): void {
 		this.isHovered.set(true)
 		// console.log('Mouse is over the button');
 	}
 
-	onMouseLeave(): void {
+	mouseLeave(): void {
 		this.isHovered.set(false)
 		// console.log('Mouse has left the button');
 	}

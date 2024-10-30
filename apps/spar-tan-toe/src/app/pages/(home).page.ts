@@ -1,8 +1,8 @@
 import { SupabaseAuth } from '@agora/supabase/auth'
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, type OnInit, computed, inject, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {
-	Event,
+	type Event,
 	NavigationCancel,
 	NavigationEnd,
 	NavigationError,
@@ -23,7 +23,7 @@ import { SharedModule } from '../shared/shared.module'
 	host: {
 		class: 'min-h-screen min-w-screen',
 	},
-	// changeDetection: ChangeDetectionStrategy.OnPush,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	template: ` <app-header></app-header>
     <main class="min-h-screen min-w-screen flex items-center justify-center">
       <section hlmCard>
@@ -74,11 +74,10 @@ export default class HomeComponent implements OnInit {
 
 		const navigation = this._router.getCurrentNavigation()
 		console.log(navigation)
-		if (navigation?.extras.state && navigation.extras.state['error']) {
+		if (navigation?.extras?.state?.error) {
 			console.log('we toasting')
-			this.toast(navigation.extras.state['error'])
+			this.toast(navigation.extras.state.error)
 		}
-		let v = ''
 	}
 
 	protected signIn() {}
@@ -98,15 +97,17 @@ export default class HomeComponent implements OnInit {
 			} else {
 				await this._createNewGame()
 			}
-		} catch (error: any) {
+		} catch (error) {
+			console.log(error)
 			this.toast('Seem to be running into a temporary issue, try again later!')
 		}
 	}
 
-	private async _createNewGame(): Promise<any> {
+	private async _createNewGame(): Promise<void> {
 		const game = await firstValueFrom(this._gameManagerService.startNewGame())
+		console.log('GameID', game)
 
-		if (game && game.id) {
+		if (game?.id) {
 			this._router.navigate(['game', game.id])
 		} else {
 			throw new Error('Failed to create game')

@@ -1,6 +1,6 @@
 import { GoogleSigninButtonDirective, SupabaseAuth } from '@agora/supabase/auth'
-import { RouteMeta } from '@analogjs/router'
-import { Component, OnInit, computed, inject } from '@angular/core'
+import type { RouteMeta } from '@analogjs/router'
+import { Component, type OnInit, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { SharedModule } from '../../shared/shared.module'
 import { unauthenticatedGuard } from './guards/unauthenticated.guard'
@@ -48,12 +48,9 @@ export default class SignInPageComponent implements OnInit {
 	private _auth = inject(SupabaseAuth)
 	protected isSigned = computed(() => this._auth.session())
 
-	onGoogleSignIn(credential: any) {
-		console.log(credential)
+	onGoogleSignIn(credential: unknown) {
 		this._auth.handleSignInWithGoogle(credential)
 	}
-
-	constructor() {}
 
 	ngOnInit(): void {}
 }

@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { game, moves } from '../../../../drizzle/schema'
 import { db } from '../../../db'
+import { game, moves } from '../../../db/schema'
 import { publicProcedure, router } from '../trpc'
 
 export const movesRouter = router({

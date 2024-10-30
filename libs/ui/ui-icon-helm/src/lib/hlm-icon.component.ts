@@ -4,17 +4,17 @@ import {
 	Component,
 	ElementRef,
 	Input,
-	OnDestroy,
+	type OnDestroy,
 	PLATFORM_ID,
 	ViewEncapsulation,
 	computed,
 	inject,
 	signal,
 } from '@angular/core'
-import { IconName, NgIconComponent } from '@ng-icons/core'
+import { type IconName, NgIconComponent } from '@ng-icons/core'
 import { hlm } from '@spartan-ng/ui-core'
 import { cva } from 'class-variance-authority'
-import { ClassValue } from 'clsx'
+import type { ClassValue } from 'clsx'
 
 const DEFINED_SIZES = ['xs', 'sm', 'base', 'lg', 'xl', 'none'] as const
 
@@ -91,10 +91,10 @@ export class HlmIconComponent implements OnDestroy {
 	constructor() {
 		if (isPlatformBrowser(this._platformId)) {
 			this._mutObs = new MutationObserver((mutations: MutationRecord[]) => {
-				mutations.forEach((mutation: MutationRecord) => {
+				for (const mutation of mutations) {
 					if (mutation.attributeName !== 'class') return
 					this._hostClasses.set((mutation.target as Node & { className?: string })?.className ?? '')
-				})
+				}
 			})
 			this._mutObs.observe(this._host.nativeElement, {
 				attributes: true,

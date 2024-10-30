@@ -1,8 +1,8 @@
 import { ScriptLoaderService } from '@agora/script-loader'
 import { EventEmitter, Injectable, inject } from '@angular/core'
-import { AsyncSubject, BehaviorSubject, Observable, filter, skip } from 'rxjs'
+import { AsyncSubject, BehaviorSubject, type Observable, filter, skip } from 'rxjs'
 import { GOOGLE_CLIENT_ID, GOOGLE_INIT_OPTIONS } from './google-token'
-import { SocialUser } from './socialuser'
+import type { SocialUser } from './socialuser'
 import { SupabaseAuth } from './supabase.auth.service'
 
 export interface GoogleInitOptions {
@@ -106,10 +106,9 @@ export class GoogleAuthService {
 					}
 
 					if (this.initOptions?.scopes) {
-						const scope =
-							this.initOptions.scopes instanceof Array
-								? this.initOptions.scopes.filter((s: any) => s).join(' ')
-								: this.initOptions.scopes
+						const scope = Array.isArray(this.initOptions.scopes)
+							? this.initOptions.scopes.filter((s: unknown) => s).join(' ')
+							: this.initOptions.scopes
 
 						this._tokenClient = google.accounts.oauth2.initTokenClient({
 							client_id: this.clientId,
@@ -159,8 +158,8 @@ export class GoogleAuthService {
 			name: payload.name || '',
 			email: payload.email || '',
 			photoUrl: payload.picture || '',
-			firstName: payload['given_name'] || '',
-			lastName: payload['family_name'] || '',
+			firstName: payload.given_name || '',
+			lastName: payload.family_name || '',
 		}
 	}
 
@@ -171,9 +170,7 @@ export class GoogleAuthService {
 			window
 				.atob(base64)
 				.split('')
-				.map(function (c) {
-					return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-				})
+				.map((c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`)
 				.join(''),
 		)
 		return JSON.parse(jsonPayload)

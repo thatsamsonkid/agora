@@ -1,6 +1,6 @@
 import { SupabaseClientService } from '@agora/supabase/core'
-import { Injectable, OnDestroy, computed, inject, signal } from '@angular/core'
-import {
+import { Injectable, type OnDestroy, computed, inject, signal } from '@angular/core'
+import type {
 	AuthError,
 	AuthResponse,
 	OAuthResponse,
@@ -25,6 +25,7 @@ export class SupabaseAuth implements OnDestroy {
 	public user = computed(() => this._session()?.user)
 	public isAuthenticated = computed(() => !!this._session())
 	public isAnonymous = computed(() => this.user()?.is_anonymous)
+	public authToken = computed(() => this._session()?.access_token)
 
 	sessionSub!: Subscription
 
@@ -67,7 +68,7 @@ export class SupabaseAuth implements OnDestroy {
 	 * Sign Up Converter Methods ----------------------------
 	 */
 
-	async convertToPermanentUserEmailPhone(id: string): Promise<UserResponse> {
+	async convertToPermanentUserEmailPhone(): Promise<UserResponse> {
 		// Might need to figure out what form of ID was given
 		const res = await this._supabase.client.auth.updateUser({
 			email: 'example@email.com',

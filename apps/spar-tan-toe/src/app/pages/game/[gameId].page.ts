@@ -1,11 +1,10 @@
-import { RouteMeta } from '@analogjs/router'
+import type { RouteMeta } from '@analogjs/router'
 import { JsonPipe } from '@angular/common'
-import { Component, OnDestroy, OnInit, inject } from '@angular/core'
+import { Component, type OnInit, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { filter, map, take } from 'rxjs'
 import { GameboardCellComponent } from '../../components/gameboard-cell.component'
 import { GameManagerService } from '../../core/services/game-manager.service'
-import { anonAuthGuard } from '../../guards/anon-auth.guard'
 import { SharedModule } from '../../shared/shared.module'
 
 export const routeMeta: RouteMeta = {
@@ -19,8 +18,7 @@ export const routeMeta: RouteMeta = {
     <div class="grid grid-rows-3 divide-y border mx-6 rounded-sm">
       @for(row of gameManager.gameboard(); track $index){
       <div class="grid grid-cols-3 divide-x">
-        @for(col of row; let idx = $index; track col){
-
+        @for(col of row; let idx = $index; track $index + col){
         <div class="flex h-60 grow">
           <gb-cell
             [coordinates]="{ x: $index, y: idx }"
@@ -42,7 +40,6 @@ export default class GameIdPageComponent implements OnInit {
 	readonly gameId$ = this.route.paramMap.pipe(map((params) => params.get('gameId')))
 
 	ngOnInit(): void {
-		// Only connect if gameChannel not already setup
 		if (!this.gameManager.gameChannel) {
 			this.gameId$
 				.pipe(

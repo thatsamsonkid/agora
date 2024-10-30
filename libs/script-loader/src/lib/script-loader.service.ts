@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 
 @Injectable()
 export class ScriptLoaderService {
-	loadScript(id: string, src: string, onload: any, parentElement?: HTMLElement | null): void {
+	loadScript(id: string, src: string, onload: null | (() => void), parentElement?: HTMLElement | null): void {
 		// get document if platform is only browser
 		if (typeof document !== 'undefined' && !document.getElementById(id)) {
 			const script = document.createElement('script')
@@ -11,11 +11,11 @@ export class ScriptLoaderService {
 			script.src = src
 			script.onload = onload
 
-			if (!parentElement) {
-				parentElement = document.head
+			if (parentElement) {
+				parentElement.appendChild(script)
+			} else {
+				document.head.appendChild(script)
 			}
-
-			parentElement.appendChild(script)
 		}
 	}
 }

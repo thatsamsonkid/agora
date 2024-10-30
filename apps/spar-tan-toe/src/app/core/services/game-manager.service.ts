@@ -1,18 +1,17 @@
 import { SupabaseAuth } from '@agora/supabase/auth'
 import { SupabaseClientService } from '@agora/supabase/core'
-import { DestroyRef, Injectable, OnDestroy, computed, effect, inject, signal } from '@angular/core'
+import { DestroyRef, Injectable, type OnDestroy, computed, inject, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
-import { RealtimeChannel, RealtimePresenceState } from '@supabase/supabase-js'
-import { moves } from 'apps/spar-tan-toe/drizzle/schema'
-import { Observable, catchError, firstValueFrom, map, of, take, takeUntil, tap, throwError } from 'rxjs'
+import type { RealtimeChannel } from '@supabase/supabase-js'
+import { type Observable, catchError, firstValueFrom, map, of, take, tap } from 'rxjs'
 import { injectTrpcClient } from '../../../trpc-client'
 
-interface game {
-	gameReady: boolean
-	playerTurn: string
-	gameState: string[][]
-}
+// interface game {
+// 	gameReady: boolean
+// 	playerTurn: string
+// 	gameState: string[][]
+// }
 
 @Injectable({
 	providedIn: 'root',
@@ -47,10 +46,11 @@ export class GameManagerService implements OnDestroy {
 		// 2. get id, navigate user to game/gameid
 		// 3. Set up a supabase live session
 		// 4. Create invite link for another player to join
-		return this._trpc.game.create.mutate({}).pipe(
+		return this._trpc.game.create.mutate().pipe(
 			take(1),
 			map((res) => res[0]),
 			tap(({ id }) => {
+				console.log(id)
 				this.gameId.set(id)
 				this.createSupabaseChannel(id)
 			}),
@@ -63,12 +63,12 @@ export class GameManagerService implements OnDestroy {
 				throw Error('Game not found')
 			}
 
-			const { data, error } = await firstValueFrom(this.findGame(gameId))
+			const { error } = await firstValueFrom(this.findGame(gameId))
 			if (error) {
 				throw Error('Game not found')
 			}
 			this.gameId.set(gameId)
-			this.createSupabaseChannel(gameId)
+			// this.createSupabaseChannel(gameId)
 			// this.findGame(gameId)
 			//   .pipe(take(1), takeUntilDestroyed(this.destroyRef))
 			//   .subscribe({
@@ -80,9 +80,9 @@ export class GameManagerService implements OnDestroy {
 			//       throw Error('Game not found');
 			//     },
 			//   });
-		} catch (e) {
+		} catch (e: unknown) {
 			this._router.navigate(['/'], {
-				state: { error: 'Failed to fetch item' },
+				state: { error: `Failed to fetch item, because  ${e}` },
 			})
 		}
 	}
@@ -137,7 +137,7 @@ export class GameManagerService implements OnDestroy {
 		// });
 	}
 
-	private findGame(gameId: string): Observable<any> {
+	private findGame(gameId: string): Observable<{ data: unknown; error: string | null }> {
 		return this._trpc.game.select.query({ id: gameId }).pipe(
 			map((response) => {
 				if (!response?.[0]?.id) {
@@ -145,7 +145,7 @@ export class GameManagerService implements OnDestroy {
 				}
 				return { data: response[0], error: null }
 			}),
-			catchError((error) => of({ data: null, error: 'Game not found' })),
+			catchError(() => of({ data: null, error: 'Game not found' })),
 		)
 	}
 
@@ -173,8 +173,8 @@ export class GameManagerService implements OnDestroy {
 
 	private updateMovesTable(x: number, y: number): void {
 		const gameId = this.gameId()
-		// const playerId = this._authService.session()?.user.id;
-		const playerId = '65f2d3f8-ff5d-4a71-bd15-d49dc92c2d76'
+		const playerId = this._authService.session()?.user.id
+		// const playerId = '65f2d3f8-ff5d-4a71-bd15-d49dc92c2d76'
 		console.log(gameId, playerId)
 		if (playerId && gameId) {
 			this._trpc.moves.create

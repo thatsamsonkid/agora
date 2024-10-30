@@ -1,10 +1,10 @@
 import { relations } from 'drizzle-orm/relations'
-import { game, leaderboard, moves, profile, usersInAuth } from './schema'
+import { game, leaderboard, moves, profile, users } from './schema'
 
 export const profileRelations = relations(profile, ({ one, many }) => ({
-	usersInAuth: one(usersInAuth, {
+	users: one(users, {
 		fields: [profile.id],
-		references: [usersInAuth.id],
+		references: [users.id],
 	}),
 	games_player_1: many(game, {
 		relationName: 'game_player_1_profile_id',
@@ -16,7 +16,7 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
 	moves: many(moves),
 }))
 
-export const usersInAuthRelations = relations(usersInAuth, ({ many }) => ({
+export const usersRelations = relations(users, ({ many }) => ({
 	profiles: many(profile),
 }))
 

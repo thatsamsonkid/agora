@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core'
-import { SupabaseClient, createClient } from '@supabase/supabase-js'
+import { type SupabaseClient, createClient } from '@supabase/supabase-js'
 import { SUPABASE_PROJECT, SUPABASE_PUB_KEY } from './supabase-tokens'
 
 @Injectable({
@@ -13,9 +13,9 @@ export class SupabaseClientService {
 
 	constructor() {
 		this._supabase = createClient(
-			// `https://${this._SUPABASE_PROJECT}.supabase.co`,
+			`https://${this._SUPABASE_PROJECT}.supabase.co`,
 			// this._SUPABASE_PUB_KEY
-			`http://localhost:54321`,
+			// `http://localhost:54321`,
 			this._SUPABASE_PUB_KEY,
 		)
 	}

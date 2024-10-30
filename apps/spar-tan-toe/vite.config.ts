@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => {
 		},
 		server: {
 			fs: {
-				allow: ['.'],
+				allow: ['.', '../../libs/ui'],
 			},
 		},
 		plugins: [analog({ ssr: false }), nxViteTsPaths(), splitVendorChunkPlugin()],
