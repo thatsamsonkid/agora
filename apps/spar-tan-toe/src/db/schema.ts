@@ -1,6 +1,7 @@
 import {
 	bigint,
 	integer,
+	pgEnum,
 	pgSchema,
 	pgTable,
 	primaryKey,
@@ -26,11 +27,14 @@ export const profile = pgTable('profile', {
 	email: varchar('email', { length: 256 }),
 })
 
+export const gameStatusEnum = pgEnum('game_status', ['queued', 'in-progress', 'paused', 'complete'])
+
 export const game = pgTable('game', {
 	id: uuid('id').defaultRandom().primaryKey().notNull(),
 	created_at: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	player_1: uuid('player_1').references(() => profile.id),
 	player_2: uuid('player_2').references(() => profile.id),
+	game_status: gameStatusEnum(),
 })
 
 export const leaderboard = pgTable('leaderboard', {
