@@ -1,20 +1,23 @@
 import { SupabaseAuth } from '@agora/supabase/auth'
 import { JsonPipe } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { SharedModule } from '../../shared/shared.module'
 
 @Component({
 	selector: 'app-header',
 	standalone: true,
-	imports: [JsonPipe, SharedModule],
+	imports: [JsonPipe, SharedModule, RouterLink],
 	template: ` <header class="flex justify-between px-4 py-5">
+    <a routerLink="/">
     <h1>Spar-tan-toe</h1>
+    </a>
     @if(isSignedIn() && !isAnon()){
 
     <hlm-avatar variant="medium">
       <img
         [src]="profilePic()"
-        alt="spartan logo. Resembling a spartanic shield"
+        alt="spartan logo. Resembling a spartan shield"
         hlmAvatarImage
       />
       <span class="bg-[#FD005B] text-white" hlmAvatarFallback>RG</span>

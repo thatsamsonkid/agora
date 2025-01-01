@@ -48,7 +48,7 @@ export default class SignInPageComponent implements OnInit {
 	private _auth = inject(SupabaseAuth)
 	protected isSigned = computed(() => this._auth.session())
 
-	onGoogleSignIn(credential: unknown) {
+	onGoogleSignIn(credential: any) {
 		this._auth.handleSignInWithGoogle(credential)
 	}
 

@@ -1,5 +1,15 @@
 import { SupabaseAuth } from '@agora/supabase/auth'
-import { ChangeDetectionStrategy, Component, DestroyRef, type OnInit, computed, inject, signal } from '@angular/core'
+import type { RouteMeta } from '@analogjs/router'
+import {
+	ChangeDetectionStrategy,
+	Component,
+	DestroyRef,
+	type OnInit,
+	computed,
+	effect,
+	inject,
+	signal,
+} from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {
 	type Event,
@@ -13,8 +23,13 @@ import {
 import { toast } from 'ngx-sonner'
 import { firstValueFrom } from 'rxjs'
 import { HeaderComponent } from '../core/components/header.component'
+import { anonAuthGuard } from '../core/guards/anon-auth.guard'
 import { GameManagerService } from '../core/services/game-manager.service'
 import { SharedModule } from '../shared/shared.module'
+
+export const routeMeta: RouteMeta = {
+	canActivate: [anonAuthGuard],
+}
 
 @Component({
 	selector: 'spar-tan-toe-home',
@@ -67,13 +82,19 @@ export default class HomeComponent implements OnInit {
 	protected readonly toast = toast
 	protected loading = signal(false)
 
+	constructor() {
+		effect(() => {
+			console.log('Auth: ', this._auth.isAuthenticated(), this._auth.user())
+		})
+	}
+
 	ngOnInit() {
-		if (this._auth.isAuthenticated()) {
-			this._auth.signInAnon()
-		}
+		// if (this._auth.isAuthenticated()) {
+		// 	this._auth.signInAnon()
+		// }
 
 		const navigation = this._router.getCurrentNavigation()
-		console.log(navigation)
+		// console.log(navigation)
 		if (navigation?.extras?.state?.error) {
 			console.log('we toasting')
 			this.toast(navigation.extras.state.error)

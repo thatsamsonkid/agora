@@ -1,6 +1,5 @@
 import { TRPCError, initTRPC } from '@trpc/server'
 import SuperJSON from 'superjson'
-import { getSession } from './auth'
 import type { Context } from './context'
 
 interface Meta {
@@ -30,14 +29,14 @@ export const authMiddleware = t.middleware(async (opts) => {
 	// Access options from the input object
 	const authToken = ctx?.authToken ?? null
 
-	const session = await getSession(authToken) // Retrieve session based on request context
-	if (!session) {
+	// const session = await getSession(authToken) // Retrieve session based on request context
+	if (!authToken) {
 		throw new TRPCError({ code: 'UNAUTHORIZED', message: 'You must be logged in to access this resource' })
 	}
 	return next({
 		ctx: {
 			...ctx,
-			session,
+			// session,
 		},
 	})
 })

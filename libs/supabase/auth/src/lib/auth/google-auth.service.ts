@@ -5,6 +5,8 @@ import { GOOGLE_CLIENT_ID, GOOGLE_INIT_OPTIONS } from './google-token'
 import type { SocialUser } from './socialuser'
 import { SupabaseAuth } from './supabase.auth.service'
 
+declare let google: any
+
 export interface GoogleInitOptions {
 	/**
 	 * enables the One Tap mechanism, and makes auto-login possible
@@ -102,7 +104,7 @@ export class GoogleAuthService {
 					if (this.initOptions?.oneTapEnabled) {
 						this._socialUser
 							.pipe(filter((user) => user === null))
-							.subscribe(() => google.accounts.id.prompt(console.debug))
+							.subscribe(() => google!.accounts.id.prompt(console.debug))
 					}
 
 					if (this.initOptions?.scopes) {
@@ -110,11 +112,11 @@ export class GoogleAuthService {
 							? this.initOptions.scopes.filter((s: unknown) => s).join(' ')
 							: this.initOptions.scopes
 
-						this._tokenClient = google.accounts.oauth2.initTokenClient({
+						this._tokenClient = google!.accounts.oauth2.initTokenClient({
 							client_id: this.clientId,
 							scope,
 							prompt: this.initOptions.prompt,
-							callback: (tokenResponse) => {
+							callback: (tokenResponse: any) => {
 								console.log(tokenResponse)
 								if (tokenResponse.error) {
 									this._accessToken.error({

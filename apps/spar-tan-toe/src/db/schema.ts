@@ -34,7 +34,7 @@ export const game = pgTable('game', {
 	created_at: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	player_1: uuid('player_1').references(() => profile.id),
 	player_2: uuid('player_2').references(() => profile.id),
-	game_status: gameStatusEnum(),
+	game_status: gameStatusEnum().notNull(),
 })
 
 export const leaderboard = pgTable('leaderboard', {

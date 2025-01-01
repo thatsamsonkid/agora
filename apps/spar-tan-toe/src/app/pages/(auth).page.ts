@@ -6,7 +6,7 @@ import { ActivatedRoute, Router, RouterOutlet } from '@angular/router'
 	selector: 'auth-page',
 	standalone: true,
 	imports: [RouterOutlet],
-	template: ' <router-outlet></router-outlet> ',
+	template: ' <router-outlet/> ',
 })
 export default class AuthPageComponent {
 	private readonly route = inject(ActivatedRoute)

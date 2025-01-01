@@ -1,29 +1,33 @@
 import { Component, input, output, signal } from '@angular/core'
-// import { GameManagerService } from '../core/services/game-manager.service';
 
 @Component({
 	selector: 'gb-cell',
-	template: `<button
+	standalone: true,
+	host: {
+		class: 'contents',
+	},
+	// imports: [JsonPipe],
+	template: `
+	<!-- Spacer -->
+	<button
     class="w-full h-full"
     [disabled]="disabled()"
     (click)="select($event)"
     (mouseenter)="mouseEnter()"
     (mouseleave)="mouseLeave()"
   >
+  <!-- {{value() | json}} -->
     @if(value() === "X"){
     <span>X</span>
-    } @else {
-    <span>_</span>
-    <!-- @if(player() === 0){
-    <span>X</span> } @else { <span>O</span> }  -->
-    }
+    } @else if(value() === "O"){
+		<span>O</span>
+	}
+	<!-- @else {
+		<span>_</span>
+	} -->
 
-    {{ coordinates()?.x }}, {{ coordinates()?.y }}
+    <!-- {{ coordinates()?.x }}, {{ coordinates()?.y }} -->
   </button>`,
-	standalone: true,
-	host: {
-		class: 'contents',
-	},
 })
 export class GameboardCellComponent {
 	coordinates = input<{ x: number; y: number }>()

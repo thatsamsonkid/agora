@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '../../../db'
 import { game, moves } from '../../../db/schema'
@@ -27,6 +28,13 @@ export const movesRouter = router({
 				})
 				.returning({ id: game.id })
 		}),
+	select: publicProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			}),
+		)
+		.query(async ({ input }) => await db.select().from(moves).where(eq(moves.game_id, input.id))),
 	//   list: publicProcedure.query(() => async () => {
 	//     const selectedNotes = await db.select().from(notes);
 	//     return selectedNotes.map((note) => ({ ...note, id: +note.id }));
