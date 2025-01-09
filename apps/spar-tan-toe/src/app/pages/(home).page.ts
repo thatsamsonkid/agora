@@ -31,7 +31,7 @@ export const routeMeta: RouteMeta = {
 	},
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	template: `
-		<spartan-header />
+		<app-header />
 		<main class="min-w-screen flex min-h-screen items-center justify-center">
 			<section hlmCard>
 				<div hlmCardHeader>

@@ -5,7 +5,7 @@ import { HeaderComponent } from '../core/components/header.component';
 @Component({
 	selector: 'app-game-page',
 	imports: [RouterOutlet, HeaderComponent],
-	template: ' <spartan-header /><router-outlet />',
+	template: ' <app-header /><router-outlet />',
 	standalone: true,
 })
 export default class GamePageComponent {}
