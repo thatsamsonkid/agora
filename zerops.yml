@@ -12,4 +12,4 @@ zerops:
       ports:
         - port: 3000
           httpSupport: true
-      start: node node server/index.mjs
+      start: node node analog/server/index.mjs
