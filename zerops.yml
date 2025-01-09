@@ -6,6 +6,7 @@ zerops:
         - pnpm i
         - npx nx build spar-tan-toe
       deployFiles:
+        - dist/apps/spar-tan-toe/client/~
         - dist/apps/spar-tan-toe/analog/~
     run:
       base: nodejs@22
