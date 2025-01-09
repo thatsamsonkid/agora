@@ -1,6 +1,6 @@
 import { GoogleSigninButtonDirective, SupabaseAuth } from '@agora/supabase/auth';
 import type { RouteMeta } from '@analogjs/router';
-import { Component, computed, inject, type OnInit } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
 import { unauthenticatedGuard } from './guards/unauthenticated.guard';
@@ -40,13 +40,11 @@ export const routeMeta: RouteMeta = {
 		</main>
 	`,
 })
-export default class SignInPageComponent implements OnInit {
-	private _auth = inject(SupabaseAuth);
+export default class SignInPageComponent {
+	private readonly _auth = inject(SupabaseAuth);
 	protected isSigned = computed(() => this._auth.session());
 
 	onGoogleSignIn(credential: any) {
 		this._auth.handleSignInWithGoogle(credential);
 	}
-
-	ngOnInit(): void {}
 }

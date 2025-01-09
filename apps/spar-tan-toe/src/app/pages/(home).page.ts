@@ -1,15 +1,6 @@
 import { SupabaseAuth } from '@agora/supabase/auth';
 import type { RouteMeta } from '@analogjs/router';
-import {
-	ChangeDetectionStrategy,
-	Component,
-	DestroyRef,
-	computed,
-	effect,
-	inject,
-	signal,
-	type OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal, type OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
 	NavigationCancel,
@@ -32,7 +23,7 @@ export const routeMeta: RouteMeta = {
 };
 
 @Component({
-	selector: 'spar-tan-toe-home',
+	selector: 'spartan-toe-home',
 	standalone: true,
 	imports: [SharedModule, RouterLink, HeaderComponent],
 	host: {
@@ -40,7 +31,7 @@ export const routeMeta: RouteMeta = {
 	},
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	template: `
-		<app-header></app-header>
+		<spartan-header />
 		<main class="min-w-screen flex min-h-screen items-center justify-center">
 			<section hlmCard>
 				<div hlmCardHeader>
@@ -49,12 +40,12 @@ export const routeMeta: RouteMeta = {
 				<div hlmCardContent class="text-center">
 					@if (!isSigned() || isAnon()) {
 						<ul class="flex flex-col gap-3">
-							<li>
+							<!-- <li>
 								<a hlmBtn class="w-full" routerLink="/signin" (click)="signIn()">Sign In</a>
 							</li>
 							<li>
 								<a hlmBtn class="w-full" (click)="signUp()">Sign Up</a>
-							</li>
+							</li> -->
 							<hr class="my-2" />
 							<li>
 								<a hlmBtn class="w-full" (click)="startNewGame()">Just Start New game</a>
@@ -70,10 +61,10 @@ export const routeMeta: RouteMeta = {
 	`,
 })
 export default class HomeComponent implements OnInit {
-	private _auth = inject(SupabaseAuth);
-	private _gameManagerService = inject(GameManagerService);
-	private _router = inject(Router);
-	private _destroyRef = inject(DestroyRef);
+	private readonly _auth = inject(SupabaseAuth);
+	private readonly _gameManagerService = inject(GameManagerService);
+	private readonly _router = inject(Router);
+	private readonly _destroyRef = inject(DestroyRef);
 
 	protected isSigned = computed(() => this._auth.session());
 	protected isAnon = computed(() => this._auth.user()?.is_anonymous);
@@ -81,9 +72,9 @@ export default class HomeComponent implements OnInit {
 	protected loading = signal(false);
 
 	constructor() {
-		effect(() => {
-			console.log('Auth: ', this._auth.isAuthenticated(), this._auth.user());
-		});
+		// effect(() => {
+		// 	console.log('Auth: ', this._auth.isAuthenticated(), this._auth.user());
+		// });
 	}
 
 	ngOnInit() {
@@ -94,14 +85,13 @@ export default class HomeComponent implements OnInit {
 		const navigation = this._router.getCurrentNavigation();
 		// console.log(navigation)
 		if (navigation?.extras?.state?.error) {
-			console.log('we toasting');
 			this.toast(navigation.extras.state.error);
 		}
 	}
 
-	protected signIn() {}
+	// protected signIn() {}
 
-	protected signUp() {}
+	// protected signUp() {}
 
 	protected async startNewGame(): Promise<void> {
 		this.listenToRouteEvents();

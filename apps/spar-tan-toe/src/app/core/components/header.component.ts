@@ -23,7 +23,7 @@ import { SharedModule } from '../../shared/shared.module';
 	`,
 })
 export class HeaderComponent {
-	private _auth = inject(SupabaseAuth);
+	private readonly _auth = inject(SupabaseAuth);
 	protected isSignedIn = computed(() => this._auth.session());
 	protected isAnon = computed(() => this._auth.user()?.is_anonymous);
 	protected profilePic = computed(() => this.isSignedIn()?.user?.user_metadata.picture);

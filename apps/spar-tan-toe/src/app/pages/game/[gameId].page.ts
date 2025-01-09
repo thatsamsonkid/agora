@@ -47,39 +47,41 @@ export const routeMeta: RouteMeta = {
 	`,
 })
 export default class GameIdPageComponent implements OnInit {
-	private readonly route = inject(ActivatedRoute);
+	private readonly _route = inject(ActivatedRoute);
 	private readonly _auth = inject(SupabaseAuth);
-	private readonly gameManager = inject(GameManagerService);
+	private readonly _gameManager = inject(GameManagerService);
 
-	private readonly gameId$ = this.route.paramMap.pipe(map((params) => params.get('gameId')));
+	private readonly _gameId$ = this._route.paramMap.pipe(map((params) => params.get('gameId')));
 
 	protected readonly id = computed(() => this._auth.user()?.id);
 
 	//temp
-	protected game = computed(() => this.gameManager.game());
+	protected game = computed(() => this._gameManager.game());
 
-	protected readonly gameboard = computed(() => this.gameManager.gameboard());
-	protected readonly gameStatus = computed(() => this.gameManager.game().status);
-	protected readonly isPlayerTurn = computed(() => (this.gameManager.game().playerTurn ? 'Your Turn' : 'Not you turn'));
-	protected readonly isSpectator = this.gameManager.isSpectator;
-	protected readonly playerSymbol = this.gameManager.playerSymbol;
+	protected readonly gameboard = computed(() => this._gameManager.gameboard());
+	protected readonly gameStatus = computed(() => this._gameManager.game().status);
+	protected readonly isPlayerTurn = computed(() =>
+		this._gameManager.game().playerTurn ? 'Your Turn' : 'Not you turn',
+	);
+	protected readonly isSpectator = this._gameManager.isSpectator;
+	protected readonly playerSymbol = this._gameManager.playerSymbol;
 
 	ngOnInit(): void {
-		if (!this.gameManager.gameChannel) {
-			this.gameId$
+		if (!this._gameManager.gameChannel) {
+			this._gameId$
 				.pipe(
 					take(1),
 					filter((val) => !!val),
 				)
 				.subscribe(async (gameId: string | null) => {
-					await this.gameManager.connectToGame(gameId);
+					await this._gameManager.connectToGame(gameId);
 				});
 		}
 	}
 
 	selectCell(coordinates: { x: number; y: number }): void {
-		if (this.gameManager.game().playerTurn) {
-			this.gameManager.takeTurn(coordinates);
+		if (this._gameManager.game().playerTurn) {
+			this._gameManager.takeTurn(coordinates);
 		}
 	}
 }

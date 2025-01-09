@@ -51,12 +51,12 @@ export class GameManagerService implements OnDestroy {
 		],
 	});
 
-	private initialGameSetup = signal(false);
+	private readonly _initialGameSetup = signal(false);
 
 	public gameId = computed(() => this.game().id);
 	public gameboard = computed(() => this.game().gameboard);
 
-	private isPlayerOne = computed(() => this.playerOne() === this._authService.userId());
+	private readonly _isPlayerOne = computed(() => this.playerOne() === this._authService.userId());
 
 	// We would create a symbol mapper
 	public symbolMap = new Map([
@@ -77,10 +77,10 @@ export class GameManagerService implements OnDestroy {
 		}
 		return this.symbolMap.get(playerTwoSymbol);
 	});
-	// public playerSymbol = computed(() => (this.isPlayerOne() ? this.playerOneSymbol() : this.playerTwoSymbol()))
-	// public oppSymbol = computed(() => (this.isPlayerOne() ? this.playerTwoSymbol() : this.playerOneSymbol()))
-	public playerSymbol = computed(() => (this.isPlayerOne() ? 'X' : 'O'));
-	public oppSymbol = computed(() => (this.isPlayerOne() ? 'O' : 'X'));
+	// public playerSymbol = computed(() => (this._isPlayerOne() ? this.playerOneSymbol() : this.playerTwoSymbol()))
+	// public oppSymbol = computed(() => (this._isPlayerOne() ? this.playerTwoSymbol() : this.playerOneSymbol()))
+	public playerSymbol = computed(() => (this._isPlayerOne() ? 'X' : 'O'));
+	public oppSymbol = computed(() => (this._isPlayerOne() ? 'O' : 'X'));
 
 	public playerOne = computed(() => this.game().playerOne);
 	public playerTwo = computed(() => this.game().playerTwo);
@@ -88,7 +88,7 @@ export class GameManagerService implements OnDestroy {
 
 	public isSpectator = signal(false);
 
-	private winningCombos = [
+	private readonly _winningCombos = [
 		// Horizontal rows (all share the same y)
 		[
 			{ y: 0, x: 0 },
@@ -207,7 +207,7 @@ export class GameManagerService implements OnDestroy {
 				this.loadGameMoves(gameId).pipe(
 					tap(({ data: gameMoves }) => {
 						console.log(gameMoves?.length);
-						console.log('isPlayerOne', this.isPlayerOne());
+						console.log('isPlayerOne', this._isPlayerOne());
 						if (gameMoves?.length) {
 							for (let i = 0; i < gameMoves.length; i++) {
 								console.log(gameMoves?.[i]?.column, gameMoves?.[i]?.row);
@@ -237,7 +237,7 @@ export class GameManagerService implements OnDestroy {
 
 							const lol = this.checkForWinner(this.game().gameboard);
 							console.log('Winner', lol);
-						} else if (this.isPlayerOne()) {
+						} else if (this._isPlayerOne()) {
 							this.game.update((state) => ({ ...state, playerTurn: true }));
 						}
 					}),
@@ -280,8 +280,8 @@ export class GameManagerService implements OnDestroy {
 					},
 					(payload) => {
 						// console.log('Game Table Change', payload)
-						if (!this.initialGameSetup()) {
-							this.initialGameSetup.set(true);
+						if (!this._initialGameSetup()) {
+							this._initialGameSetup.set(true);
 							const isPlayerOne = payload.new.player_1 === this._authService.userId();
 							this.game.update((state) => ({
 								...state,
@@ -378,10 +378,6 @@ export class GameManagerService implements OnDestroy {
 	}
 
 	private updateGameboard(x: number, y: number, playerSymbol?: 'X' | 'O'): (string | null)[][] {
-		// console.log(x)
-		// console.log(y)
-		// console.log(playerSymbol)
-		//@ts-ignore
 		const nextGameState = this.update2DArray(this.gameboard(), x, y, playerSymbol || this.playerSymbol());
 		this.game.update((state) => ({
 			...state,
@@ -420,7 +416,7 @@ export class GameManagerService implements OnDestroy {
 	}
 
 	private checkForWinner(board: Array<Array<string | null>>): string | null {
-		for (const combo of this.winningCombos) {
+		for (const combo of this._winningCombos) {
 			const [a, b, c] = combo;
 
 			const valA = board[a.y][a.x];

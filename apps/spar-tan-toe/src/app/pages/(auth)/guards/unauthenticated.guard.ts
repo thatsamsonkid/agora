@@ -3,10 +3,10 @@ import { inject } from '@angular/core';
 import { Router, type CanActivateFn } from '@angular/router';
 
 export const unauthenticatedGuard: CanActivateFn = () => {
-	const _authService = inject(SupabaseAuth);
+	const authService = inject(SupabaseAuth);
 	const router = inject(Router);
 
-	if (!_authService.isAuthenticated()) {
+	if (!authService.isAuthenticated()) {
 		return true;
 	}
 	router.navigate(['/']); // Redirect to login or fallback route

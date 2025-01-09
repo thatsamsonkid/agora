@@ -31,14 +31,14 @@ import { Component, input, output, signal } from '@angular/core';
 	`,
 })
 export class GameboardCellComponent {
-	coordinates = input<{ x: number; y: number }>();
-	disabled = input();
-	player = input<number>();
-	value = input();
+	public coordinates = input<{ x: number; y: number }>();
+	public disabled = input();
+	public player = input<number>();
+	public value = input();
 
-	buttonClick = output<MouseEvent>();
+	public readonly buttonClick = output<MouseEvent>();
 
-	isHovered = signal(false);
+	public isHovered = signal(false);
 
 	select(event: MouseEvent): void {
 		// console.log('making selection');

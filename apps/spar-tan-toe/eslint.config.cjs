@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 const nx = require('@nx/eslint-plugin');
 const baseConfig = require('../../eslint.config.cjs');
 
@@ -13,7 +12,7 @@ module.exports = [
 				'error',
 				{
 					type: 'attribute',
-					prefix: 'spartan',
+					// prefix: 'spartan',
 					style: 'camelCase',
 				},
 			],
@@ -21,7 +20,7 @@ module.exports = [
 				'error',
 				{
 					type: 'element',
-					prefix: 'spartan',
+					// prefix: 'spartan',
 					style: 'kebab-case',
 				},
 			],
