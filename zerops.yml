@@ -6,7 +6,7 @@ zerops:
         - pnpm i
         - pnpm build
       deployFiles:
-        - dist/apps/app/analog/~
+        - dist/apps/spar-tan-toe/analog/~
     run:
       base: nodejs@22
       ports:
