@@ -4,7 +4,7 @@ zerops:
       base: nodejs@22
       buildCommands:
         - pnpm i
-        - pnpm build
+        - npx nx build spar-tan-toe
       deployFiles:
         - dist/apps/spar-tan-toe/analog/~
     run:

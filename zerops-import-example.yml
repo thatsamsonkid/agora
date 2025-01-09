@@ -1,0 +1,5 @@
+services:
+  - hostname: spartantoe
+    type: nodejs@20
+    enableSubdomainAccess: true
+    buildFromGit: https://github.com/thatsamsonkid/agora
