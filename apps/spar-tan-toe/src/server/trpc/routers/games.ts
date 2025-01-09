@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { db } from '../../../db'
-import { game } from '../../../db/schema'
+import { db } from '../../db/db'
+import { game } from '../../db/schema'
 import { authProcedure, publicProcedure, router } from '../trpc'
 
 //Interesting concept
@@ -68,14 +68,4 @@ export const gameRouter = router({
 			}),
 		)
 		.query(async ({ input }) => await db.select().from(game).where(eq(game.id, input.id))),
-	// remove: publicProcedure
-	//   .input(
-	//     z.object({
-	//       id: z.number(),
-	//     })
-	//   )
-	//   .mutation(
-	//     async ({ input }) =>
-	//       await db.delete(game).where(eq(game.id, input.id)).returning()
-	//   ),
 })

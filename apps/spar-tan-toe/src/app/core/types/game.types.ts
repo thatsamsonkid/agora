@@ -5,5 +5,7 @@ export type GAME = {
 	created_at: string
 	player_1: string | null
 	player_2: string | null
+	player1Symbol: string | null
+	player2Symbol: string | null
 	game_status: GAME_STATUS
 }

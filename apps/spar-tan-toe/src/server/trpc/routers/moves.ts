@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { db } from '../../../db'
-import { game, moves } from '../../../db/schema'
+import { db } from '../../db/db'
+import { game, moves } from '../../db/schema'
 import { publicProcedure, router } from '../trpc'
 
 export const movesRouter = router({
@@ -16,7 +16,6 @@ export const movesRouter = router({
 			}),
 		)
 		.mutation(async ({ input }) => {
-			console.log(moves.id?.default)
 			return await db
 				.insert(moves)
 				.values({
@@ -35,18 +34,4 @@ export const movesRouter = router({
 			}),
 		)
 		.query(async ({ input }) => await db.select().from(moves).where(eq(moves.game_id, input.id))),
-	//   list: publicProcedure.query(() => async () => {
-	//     const selectedNotes = await db.select().from(notes);
-	//     return selectedNotes.map((note) => ({ ...note, id: +note.id }));
-	//   }),
-	//   remove: publicProcedure
-	//     .input(
-	//       z.object({
-	//         id: z.number(),
-	//       })
-	//     )
-	//     .mutation(
-	//       async ({ input }) =>
-	//         await db.delete(notes).where(eq(notes.id, input.id)).returning()
-	//     ),
 })

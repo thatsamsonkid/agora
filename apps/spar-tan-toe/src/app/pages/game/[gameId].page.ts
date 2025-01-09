@@ -1,5 +1,6 @@
 import { SupabaseAuth } from '@agora/supabase/auth'
 import type { RouteMeta } from '@analogjs/router'
+import { JsonPipe } from '@angular/common'
 import { Component, type OnInit, computed, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { filter, map, take } from 'rxjs'
@@ -16,7 +17,7 @@ export const routeMeta: RouteMeta = {
 @Component({
 	selector: 'app-game-id-page',
 	standalone: true,
-	imports: [SharedModule, GameboardCellComponent],
+	imports: [SharedModule, GameboardCellComponent, JsonPipe],
 	template: `<p>{{gameStatus()}}</p>
 	<p>{{id()}}</p>
 	<p>{{isPlayerTurn()}}</p>
@@ -24,6 +25,8 @@ export const routeMeta: RouteMeta = {
 	@if(isSpectator()){
 		<p>Spectating</p>
 	}
+
+{{ game() | json}}
 
     <div class="grid grid-rows-3 divide-y border mx-6 rounded-sm">
       @for(row of gameboard(); let rowIndex = $index; track rowIndex){
@@ -50,6 +53,10 @@ export default class GameIdPageComponent implements OnInit {
 	private readonly gameId$ = this.route.paramMap.pipe(map((params) => params.get('gameId')))
 
 	protected readonly id = computed(() => this._auth.user()?.id)
+
+	//temp
+	protected game = computed(() => this.gameManager.game())
+
 	protected readonly gameboard = computed(() => this.gameManager.gameboard())
 	protected readonly gameStatus = computed(() => this.gameManager.game().status)
 	protected readonly isPlayerTurn = computed(() => (this.gameManager.game().playerTurn ? 'Your Turn' : 'Not you turn'))

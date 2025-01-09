@@ -4,7 +4,7 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import { createInsertSchema } from 'drizzle-zod'
 import postgres from 'postgres'
 import { z } from 'zod'
-import { moves } from './db/schema'
+import { moves } from './schema'
 
 // Disable prefetch as it is not supported for "Transaction" pool mode
 export const supabase = createClient(import.meta.env.VITE_PROJECT_URL, import.meta.env.VITE_DATABASE_PUB_KEY)

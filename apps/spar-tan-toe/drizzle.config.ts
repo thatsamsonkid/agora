@@ -8,10 +8,10 @@ dotenv.config({
 })
 
 export default defineConfig({
-	schema: ['./apps/spar-tan-toe/src/db/schema.ts'],
+	schema: ['./apps/spar-tan-toe/src/server/db/schema.ts'],
 	dialect: 'postgresql',
 	schemaFilter: ['public'],
-	out: './drizzle',
+	out: 'apps/spar-tan-toe/drizzle',
 	dbCredentials: {
 		url: process.env.DATABASE_URL || '',
 	},

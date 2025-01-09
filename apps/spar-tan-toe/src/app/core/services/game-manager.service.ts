@@ -15,18 +15,22 @@ interface GAME_STATE {
 	playerTurn: boolean
 	playerOne: string | null
 	playerTwo: string | null
+	playerOneSymbol: string | null
+	playerTwoSymbol: string | null
 	gameboard: Array<Array<string | null>>
 }
+
+// interface PLAYER_SYMBOL = "X"
 
 @Injectable({
 	providedIn: 'root',
 })
 export class GameManagerService implements OnDestroy {
-	private _supabase = inject(SupabaseClientService)
-	private _authService = inject(SupabaseAuth)
-	private _router = inject(Router)
-	private _trpc = injectTrpcClient()
-	private destroyRef = inject(DestroyRef)
+	private readonly _supabase = inject(SupabaseClientService)
+	private readonly _authService = inject(SupabaseAuth)
+	private readonly _router = inject(Router)
+	private readonly _trpc = injectTrpcClient()
+	private readonly _destroyRef = inject(DestroyRef)
 
 	public gameChannel!: RealtimeChannel
 	public gameMovesChannel!: RealtimeChannel
@@ -38,6 +42,8 @@ export class GameManagerService implements OnDestroy {
 		playerTurn: false,
 		playerOne: null,
 		playerTwo: null,
+		playerOneSymbol: null,
+		playerTwoSymbol: null,
 		gameboard: [
 			[null, null, null],
 			[null, null, null],
@@ -45,21 +51,106 @@ export class GameManagerService implements OnDestroy {
 		],
 	})
 
+	private initialGameSetup = signal(false)
+
 	public gameId = computed(() => this.game().id)
 	public gameboard = computed(() => this.game().gameboard)
 
-	public playerSymbol = signal<'X' | 'O'>('X')
+	private isPlayerOne = computed(() => this.playerOne() === this._authService.userId())
+
+	// We would create a symbol mapper
+	public symbolMap = new Map([
+		['0', 'O'],
+		['1', 'X'],
+	])
+	public playerOneSymbol = computed(() => {
+		const playerOneSymbol = this.game().playerOneSymbol
+		if (!playerOneSymbol) {
+			return null
+		}
+		return this.symbolMap.get(playerOneSymbol)
+	})
+	public playerTwoSymbol = computed(() => {
+		const playerTwoSymbol = this.game().playerOneSymbol
+		if (!playerTwoSymbol) {
+			return null
+		}
+		return this.symbolMap.get(playerTwoSymbol)
+	})
+	// public playerSymbol = computed(() => (this.isPlayerOne() ? this.playerOneSymbol() : this.playerTwoSymbol()))
+	// public oppSymbol = computed(() => (this.isPlayerOne() ? this.playerTwoSymbol() : this.playerOneSymbol()))
+	public playerSymbol = computed(() => (this.isPlayerOne() ? 'X' : 'O'))
+	public oppSymbol = computed(() => (this.isPlayerOne() ? 'O' : 'X'))
+
+	public playerOne = computed(() => this.game().playerOne)
+	public playerTwo = computed(() => this.game().playerTwo)
 	public moves = signal([])
 
 	public isSpectator = signal(false)
 
+	private winningCombos = [
+		// Horizontal rows (all share the same y)
+		[
+			{ y: 0, x: 0 },
+			{ y: 0, x: 1 },
+			{ y: 0, x: 2 },
+		], // Top row
+		[
+			{ y: 1, x: 0 },
+			{ y: 1, x: 1 },
+			{ y: 1, x: 2 },
+		], // Middle row
+		[
+			{ y: 2, x: 0 },
+			{ y: 2, x: 1 },
+			{ y: 2, x: 2 },
+		], // Bottom row
+
+		// Vertical columns (all share the same x)
+		[
+			{ y: 0, x: 0 },
+			{ y: 1, x: 0 },
+			{ y: 2, x: 0 },
+		], // Left column
+		[
+			{ y: 0, x: 1 },
+			{ y: 1, x: 1 },
+			{ y: 2, x: 1 },
+		], // Middle column
+		[
+			{ y: 0, x: 2 },
+			{ y: 1, x: 2 },
+			{ y: 2, x: 2 },
+		], // Right column
+
+		// Diagonals
+		[
+			{ y: 0, x: 0 },
+			{ y: 1, x: 1 },
+			{ y: 2, x: 2 },
+		], // Top-left to bottom-right
+		[
+			{ y: 0, x: 2 },
+			{ y: 1, x: 1 },
+			{ y: 2, x: 0 },
+		], // Top-right to bottom-left
+	]
+
 	public startNewGame(): Observable<{ id: string }> {
 		return this._trpc.game.create.mutate().pipe(
 			take(1),
-			tap(({ id }) => {
-				// this.gameId.set(id)
-				this.game.update((state) => ({ ...state, id }))
-				this.createSupabaseChannel(id)
+			tap((game) => {
+				// this.game.update((state) => ({ ...state, id }))
+				this.game.update((state) => ({
+					...state,
+					id: game?.id,
+					playerOne: game?.player_1 ?? null,
+					playerTwo: game?.player_2 ?? null,
+					status: game?.game_status ?? state.status,
+					playerOneSymbol: 'X',
+					playerTwoSymbol: 'O',
+				}))
+				this.createSupabaseChannel(game?.id)
 			}),
 		)
 	}
@@ -85,7 +176,18 @@ export class GameManagerService implements OnDestroy {
 				throw Error('Game not found')
 			}
 
-			this.game.update((state) => ({ ...state, id: gameId }))
+			console.log('GAME FOUND', game)
+
+			// we have a duplicate of this in start new game
+			this.game.update((state) => ({
+				...state,
+				id: gameId,
+				playerOne: game?.player_1 ?? null,
+				playerTwo: game?.player_2 ?? null,
+				status: game?.game_status ?? state.status,
+				playerOneSymbol: 'X',
+				playerTwoSymbol: 'O',
+			}))
 
 			// Start listening to changes in game state
 			this.createSupabaseChannel(gameId)
@@ -94,10 +196,9 @@ export class GameManagerService implements OnDestroy {
 			if (game && this.isGameJoinable(game)) {
 				// Game is joinable
 				await this.joinGameAsPlayer(gameId)
-			} else if (this.isPlayerInGame({ player_1: game?.player_1 || '', player_2: game?.player_2 || '' })) {
-				console.log('User is a player')
-				this.playerSymbol.set(game?.player_1 === this._authService.userId() ? 'X' : 'O')
-			} else {
+			}
+
+			if (!this.isPlayerInGame()) {
 				this.isSpectator.set(true)
 			}
 
@@ -105,15 +206,22 @@ export class GameManagerService implements OnDestroy {
 			await firstValueFrom(
 				this.loadGameMoves(gameId).pipe(
 					tap(({ data: gameMoves }) => {
+						console.log(gameMoves?.length)
+						console.log('isPlayerOne', this.isPlayerOne())
 						if (gameMoves?.length) {
 							for (let i = 0; i < gameMoves.length; i++) {
-								if (gameMoves?.length && gameMoves?.[i]?.column && gameMoves?.[i]?.row) {
+								console.log(gameMoves?.[i]?.column, gameMoves?.[i]?.row)
+								if (this.isNonNegativeNumber(gameMoves?.[i]?.column) && this.isNonNegativeNumber(gameMoves?.[i]?.row)) {
 									// TODO: Instead of this which is too many for loops
 									// for bulk update of the table lets create a map
 									// and then loop through the table and check if a value exists in the map apply the value (X/O)
 									// const playerSymbol = this.playerSymbol()
 									// const oppSymbol = playerSymbol === 'X' ? 'O' : 'X'
-									const symbol = gameMoves[i].player_id === this._authService.userId() ? 'X' : 'O'
+
+									const isPlayerMove = gameMoves[i].player_id === this._authService.userId()
+
+									const symbol = isPlayerMove ? this.playerSymbol() : this.oppSymbol()
+
 									console.log(symbol)
 									this.updateGameboard(gameMoves[i].row as number, gameMoves[i].column as number, symbol)
 								}
@@ -126,6 +234,11 @@ export class GameManagerService implements OnDestroy {
 							if (gameMoves[gameMoves.length - 1].player_id !== this._authService.userId()) {
 								this.game.update((state) => ({ ...state, playerTurn: true }))
 							}
+
+							const lol = this.checkForWinner(this.game().gameboard)
+							console.log('Winner', lol)
+						} else if (this.isPlayerOne()) {
+							this.game.update((state) => ({ ...state, playerTurn: true }))
 						}
 					}),
 				),
@@ -138,18 +251,14 @@ export class GameManagerService implements OnDestroy {
 	}
 
 	public async joinGameAsPlayer(gameId: string): Promise<void> {
-		// const { data: game, error } = await firstValueFrom(this._trpc.game.join.mutate({ gameId: gameId }))
 		const { data: game, error } = await firstValueFrom(this.joinGame(gameId))
-
-		this.playerSymbol.set(game?.player_1 === this._authService.userId() ? 'X' : 'O')
-
 		if (error && !game) {
 			throw Error('Unable to join game')
 		}
 	}
 
-	public isPlayerInGame({ player_1 = '', player_2 = '' } = {}): boolean {
-		return player_1 === this._authService.userId() || player_2 === this._authService.userId()
+	public isPlayerInGame(): boolean {
+		return this.playerOne() === this._authService.userId() || this.playerTwo() === this._authService.userId()
 	}
 
 	/**
@@ -170,19 +279,19 @@ export class GameManagerService implements OnDestroy {
 						filter: `id=eq.${gameId}`,
 					},
 					(payload) => {
-						console.log('Game Table Change', payload)
-						// this.gameStatus.set(payload.new.game_status)
-						this.game.update((state) => ({ ...state, status: payload.new.game_status }))
-						if (payload.new.player_1 === this._authService.userId()) {
-							this.game.update((state) => ({ ...state, playerTurn: true }))
+						// console.log('Game Table Change', payload)
+						if (!this.initialGameSetup()) {
+							this.initialGameSetup.set(true)
+							const isPlayerOne = payload.new.player_1 === this._authService.userId()
+							this.game.update((state) => ({
+								...state,
+								playerTurn: isPlayerOne, //for now player one will always go first
+								playerOneSymbol: 'X',
+								playerTwoSymbol: 'O',
+							}))
+						} else {
+							this.game.update((state) => ({ ...state, status: payload.new.game_status }))
 						}
-						// TODO: We may want to limit doing this only for opp since player turn is already eager updating the board
-						// console.log(payload.new.row, payload.new.column)
-						// console.log(this.game().gameboard[payload.new.row][payload.new.column])
-						// if (!this.game().gameboard[payload.new.row][payload.new.column]) {
-						// 	console.log('Updating Gameboard')
-						// 	this.updateGameboard(payload.new.row, payload.new.column)
-						// }
 					},
 				)
 				.subscribe()
@@ -199,27 +308,20 @@ export class GameManagerService implements OnDestroy {
 					},
 					(payload) => {
 						// console.log('Moves Table Change', payload)
-						// TODO: We may want to limit doing this only for opp since player turn is already eager updating the board
-						// console.log(payload.new.row, payload.new.column)
-						// console.log(this.game().gameboard[payload.new.row][payload.new.column])
 						if (this._authService.user()?.id === payload.new.player_id) {
 							this.game.update((state) => ({ ...state, playerTurn: false }))
 						} else {
 							this.game.update((state) => ({ ...state, playerTurn: true }))
 						}
 
-						//
 						if (!this.game().gameboard[payload.new.row][payload.new.column]) {
-							// console.log('Updating Gameboard')
-							// const player
-							const symbol =
-								payload.new.player_id === this._authService.userId()
-									? this.playerSymbol()
-									: this.playerSymbol() === 'X'
-										? 'O'
-										: 'X'
+							const isPlayerMove = payload.new.player_id === this._authService.userId()
+							const symbol = isPlayerMove ? this.playerSymbol() : this.oppSymbol()
 							this.updateGameboard(payload.new.row, payload.new.column, symbol)
 						}
+
+						const lol = this.checkForWinner(this.game().gameboard)
+						console.log('Winner', lol)
 					},
 				)
 				.subscribe()
@@ -273,6 +375,10 @@ export class GameManagerService implements OnDestroy {
 	}
 
 	private updateGameboard(x: number, y: number, playerSymbol?: 'X' | 'O'): (string | null)[][] {
+		// console.log(x)
+		// console.log(y)
+		// console.log(playerSymbol)
+		//@ts-ignore
 		const nextGameState = this.update2DArray(this.gameboard(), x, y, playerSymbol || this.playerSymbol())
 		this.game.update((state) => ({
 			...state,
@@ -305,18 +411,40 @@ export class GameManagerService implements OnDestroy {
 					row: x,
 					symbol: 0,
 				})
-				.pipe(take(1), takeUntilDestroyed(this.destroyRef))
+				.pipe(take(1), takeUntilDestroyed(this._destroyRef))
 				.subscribe()
 		}
+	}
+
+	private checkForWinner(board: Array<Array<string | null>>): string | null {
+		for (const combo of this.winningCombos) {
+			const [a, b, c] = combo
+
+			const valA = board[a.y][a.x]
+			const valB = board[b.y][b.x]
+			const valC = board[c.y][c.x]
+
+			// If all three positions are the same and not null => winner
+			if (valA && valA === valB && valB === valC) {
+				return valA // 'X' or 'O'
+			}
+		}
+
+		// No winning combo found
+		return null
 	}
 
 	private isGameJoinable({ game_status = 'queued', player_1 = null, player_2 = null }: GAME): boolean {
 		return game_status === 'queued' && (!player_1 || !player_2)
 	}
 
-	// private updateGameId(id: string): void {
-	// 	this.game.update
-	// }
+	private isNonNegativeNumber(value: unknown) {
+		return (
+			typeof value === 'number' && // Must be a number (excludes null, undefined, etc.)
+			Number.isFinite(value) && // Excludes NaN, Infinity, -Infinity
+			value >= 0 // Allows 0 and all positive numbers
+		)
+	}
 
 	ngOnDestroy(): void {
 		if (this.gameChannel) {
