@@ -6,10 +6,10 @@ zerops:
         - pnpm i
         - npx nx build spar-tan-toe
       deployFiles:
-        - dist/apps/spar-tan-toe/~
+        - dist/apps/spar-tan-toe/analog/~
     run:
       base: nodejs@22
       ports:
         - port: 3000
           httpSupport: true
-      start: node node analog/server/index.mjs
+      start: node server/index.mjs
