@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation, computed, input, signal } from '@angular/core'
-import { BrnAvatarComponent } from '@spartan-ng/ui-avatar-brain'
-import { hlm } from '@spartan-ng/ui-core'
-import { type VariantProps, cva } from 'class-variance-authority'
-import type { ClassValue } from 'clsx'
+import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation, computed, input, signal } from '@angular/core';
+import { BrnAvatarComponent } from '@spartan-ng/ui-avatar-brain';
+import { hlm } from '@spartan-ng/ui-core';
+import { cva, type VariantProps } from 'class-variance-authority';
+import type { ClassValue } from 'clsx';
 
 export const avatarVariants = cva('relative flex shrink-0 overflow-hidden rounded-full', {
 	variants: {
@@ -15,9 +15,9 @@ export const avatarVariants = cva('relative flex shrink-0 overflow-hidden rounde
 	defaultVariants: {
 		variant: 'medium',
 	},
-})
+});
 
-type AvatarVariants = VariantProps<typeof avatarVariants>
+type AvatarVariants = VariantProps<typeof avatarVariants>;
 
 @Component({
 	selector: 'hlm-avatar',
@@ -36,14 +36,14 @@ type AvatarVariants = VariantProps<typeof avatarVariants>
 	`,
 })
 export class HlmAvatarComponent extends BrnAvatarComponent {
-	public readonly userClass = input<ClassValue>('', { alias: 'class' })
+	public readonly userClass = input<ClassValue>('', { alias: 'class' });
 	protected readonly _computedClass = computed(() =>
 		hlm(avatarVariants({ variant: this._variant() }), this.userClass()),
-	)
+	);
 
-	private readonly _variant = signal<AvatarVariants['variant']>('medium')
+	private readonly _variant = signal<AvatarVariants['variant']>('medium');
 	@Input()
 	set variant(variant: AvatarVariants['variant']) {
-		this._variant.set(variant)
+		this._variant.set(variant);
 	}
 }

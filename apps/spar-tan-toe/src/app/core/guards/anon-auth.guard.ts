@@ -1,13 +1,13 @@
-import { SupabaseAuth } from '@agora/supabase/auth'
-import { SupabaseClientService } from '@agora/supabase/core'
-import { inject } from '@angular/core'
-import type { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router'
+import { SupabaseAuth } from '@agora/supabase/auth';
+import { SupabaseClientService } from '@agora/supabase/core';
+import { inject } from '@angular/core';
+import type { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 export const anonAuthGuard: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => Promise<boolean | null> =
 	// route: ActivatedRouteSnapshot, state: RouterStateSnapshot
 	async () => {
-		const authService = inject(SupabaseAuth)
-		const supabase = inject(SupabaseClientService)
+		const authService = inject(SupabaseAuth);
+		const supabase = inject(SupabaseClientService);
 
 		/**
 		 * On client we will only call getSession, which only checks browser cookie for auth
@@ -15,15 +15,15 @@ export const anonAuthGuard: (route: ActivatedRouteSnapshot, state: RouterStateSn
 		 * On Serverside, for any api call we will call getUser to verify the user session is actually valid
 		 *
 		 */
-		const { data } = await supabase.client.auth.getSession()
+		const { data } = await supabase.client.auth.getSession();
 		if (data?.session) {
-			console.log(data?.session)
-			return true
+			console.log(data?.session);
+			return true;
 		}
-		const { data: newAnonSess } = await authService.signInAnon()
-		console.log('new non ', newAnonSess)
-		return !!newAnonSess
-	}
+		const { data: newAnonSess } = await authService.signInAnon();
+		console.log('new non ', newAnonSess);
+		return !!newAnonSess;
+	};
 
 // const router = inject(Router)
 

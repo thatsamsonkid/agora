@@ -1,9 +1,9 @@
-import { TRPCError } from '@trpc/server'
-import { eq } from 'drizzle-orm'
-import { z } from 'zod'
-import { db } from '../../db/db'
-import { game } from '../../db/schema'
-import { authProcedure, publicProcedure, router } from '../trpc'
+import { TRPCError } from '@trpc/server';
+import { eq } from 'drizzle-orm';
+import { z } from 'zod';
+import { db } from '../../db/db';
+import { game } from '../../db/schema';
+import { authProcedure, publicProcedure, router } from '../trpc';
 
 //Interesting concept
 // async ({ input }) => {
@@ -20,25 +20,25 @@ export const gameRouter = router({
 	create: authProcedure.mutation(async ({ ctx }) => {
 		try {
 			if (!ctx.supabase?.user) {
-				throw new Error('Unauthenticated')
+				throw new Error('Unauthenticated');
 			}
 			const newGame = (
 				await db
 					.insert(game)
 					.values({ player_1: ctx.supabase.user?.id } as any)
 					.returning()
-			).at(0)
+			).at(0);
 
 			if (!newGame) {
-				throw new Error('Failed to create a new game')
+				throw new Error('Failed to create a new game');
 			}
-			return newGame
+			return newGame;
 		} catch (error) {
 			throw new TRPCError({
 				code: 'INTERNAL_SERVER_ERROR',
 				message: 'An unexpected error occurred, please try again later.',
 				cause: error,
-			})
+			});
 		}
 	}),
 	join: authProcedure
@@ -52,14 +52,14 @@ export const gameRouter = router({
 				.update(game)
 				.set({ id: input.gameId, player_2: ctx.supabase.user?.id })
 				.where(eq(game.id, input.gameId))
-				.returning()
+				.returning();
 			if (!joinedGame) {
 				throw new TRPCError({
 					code: 'INTERNAL_SERVER_ERROR',
 					message: 'An unexpected error occurred, please try again later.',
-				})
+				});
 			}
-			return joinedGame
+			return joinedGame;
 		}),
 	select: publicProcedure
 		.input(
@@ -68,4 +68,4 @@ export const gameRouter = router({
 			}),
 		)
 		.query(async ({ input }) => await db.select().from(game).where(eq(game.id, input.id))),
-})
+});

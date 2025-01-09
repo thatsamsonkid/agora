@@ -52,6 +52,10 @@
 				"browserTarget": "spar-tan-toe:build"
 			}
 		},
+		"lint": {
+			"executor": "@nx/eslint:lint",
+			"outputs": ["{options.outputFile}"]
+		},
 		"test": {
 			"executor": "@analogjs/platform:vitest",
 			"outputs": ["{projectRoot}/coverage"]

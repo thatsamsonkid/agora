@@ -1,7 +1,7 @@
-import { Directive, computed, input } from '@angular/core'
-import { hlm } from '@spartan-ng/ui-core'
-import { type VariantProps, cva } from 'class-variance-authority'
-import type { ClassValue } from 'clsx'
+import { Directive, computed, input } from '@angular/core';
+import { hlm } from '@spartan-ng/ui-core';
+import { cva, type VariantProps } from 'class-variance-authority';
+import type { ClassValue } from 'clsx';
 
 export const cardFooterVariants = cva('flex p-6 pt-0', {
 	variants: {
@@ -13,8 +13,8 @@ export const cardFooterVariants = cva('flex p-6 pt-0', {
 	defaultVariants: {
 		direction: 'row',
 	},
-})
-export type CardFooterVariants = VariantProps<typeof cardFooterVariants>
+});
+export type CardFooterVariants = VariantProps<typeof cardFooterVariants>;
 
 @Directive({
 	selector: '[hlmCardFooter]',
@@ -24,8 +24,8 @@ export type CardFooterVariants = VariantProps<typeof cardFooterVariants>
 	},
 })
 export class HlmCardFooterDirective {
-	public readonly userClass = input<ClassValue>('', { alias: 'class' })
-	protected _computedClass = computed(() => hlm(cardFooterVariants({ direction: this.direction() }), this.userClass()))
+	public readonly userClass = input<ClassValue>('', { alias: 'class' });
+	protected _computedClass = computed(() => hlm(cardFooterVariants({ direction: this.direction() }), this.userClass()));
 
-	public readonly direction = input<CardFooterVariants['direction']>('row')
+	public readonly direction = input<CardFooterVariants['direction']>('row');
 }

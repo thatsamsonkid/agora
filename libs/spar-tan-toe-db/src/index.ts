@@ -1,1 +1,1 @@
-console.log('We shant be empty')
+console.log('We shant be empty');

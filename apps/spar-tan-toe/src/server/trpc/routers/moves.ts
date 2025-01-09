@@ -1,8 +1,8 @@
-import { eq } from 'drizzle-orm'
-import { z } from 'zod'
-import { db } from '../../db/db'
-import { game, moves } from '../../db/schema'
-import { publicProcedure, router } from '../trpc'
+import { eq } from 'drizzle-orm';
+import { z } from 'zod';
+import { db } from '../../db/db';
+import { game, moves } from '../../db/schema';
+import { publicProcedure, router } from '../trpc';
 
 export const movesRouter = router({
 	create: publicProcedure
@@ -25,7 +25,7 @@ export const movesRouter = router({
 					column: input.column,
 					symbol: input.symbol,
 				})
-				.returning({ id: game.id })
+				.returning({ id: game.id });
 		}),
 	select: publicProcedure
 		.input(
@@ -34,4 +34,4 @@ export const movesRouter = router({
 			}),
 		)
 		.query(async ({ input }) => await db.select().from(moves).where(eq(moves.game_id, input.id))),
-})
+});

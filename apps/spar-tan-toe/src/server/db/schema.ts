@@ -11,10 +11,10 @@ import {
 	timestamp,
 	uuid,
 	varchar,
-} from 'drizzle-orm/pg-core'
-import { authUsers } from 'drizzle-orm/supabase'
+} from 'drizzle-orm/pg-core';
+import { authUsers } from 'drizzle-orm/supabase';
 
-export const gameStatus = pgEnum('game_status', ['queued', 'in-progress', 'complete', 'paused'])
+export const gameStatus = pgEnum('game_status', ['queued', 'in-progress', 'complete', 'paused']);
 
 export const profile = pgTable(
 	'profile',
@@ -34,9 +34,9 @@ export const profile = pgTable(
 			name: 'profile_id_users_id_fk',
 		}).onDelete('cascade'),
 	],
-).enableRLS()
+).enableRLS();
 
-export const gameStatusEnum = pgEnum('game_status', ['queued', 'in-progress', 'paused', 'complete'])
+export const gameStatusEnum = pgEnum('game_status', ['queued', 'in-progress', 'paused', 'complete']);
 
 export const game = pgTable(
 	'game',
@@ -61,7 +61,7 @@ export const game = pgTable(
 			name: 'game_player_2_profile_id_fk',
 		}),
 	],
-)
+);
 
 export const leaderboard = pgTable(
 	'leaderboard',
@@ -81,7 +81,7 @@ export const leaderboard = pgTable(
 			name: 'leaderboard_player_id_profile_id_fk',
 		}),
 	],
-)
+);
 
 export const moves = pgTable(
 	'moves',
@@ -100,6 +100,9 @@ export const moves = pgTable(
 			foreignColumns: [profile.id],
 			name: 'moves_player_id_profile_id_fk',
 		}),
-		primaryKey({ columns: [table.id, table.game_id], name: 'moves_game_id_id_pk' }),
+		primaryKey({
+			columns: [table.id, table.game_id],
+			name: 'moves_game_id_id_pk',
+		}),
 	],
-)
+);

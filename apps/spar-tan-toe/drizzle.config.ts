@@ -1,11 +1,11 @@
-import path from 'node:path'
-import dotenv from 'dotenv'
-import { defineConfig } from 'drizzle-kit'
+import dotenv from 'dotenv';
+import { defineConfig } from 'drizzle-kit';
+import path from 'node:path';
 
 dotenv.config({
 	//  path: path.join(__dirname, './.env.local')
 	path: path.join(__dirname, './.env.production'),
-})
+});
 
 export default defineConfig({
 	schema: ['./apps/spar-tan-toe/src/server/db/schema.ts'],
@@ -17,4 +17,4 @@ export default defineConfig({
 	},
 	verbose: true,
 	strict: true,
-})
+});

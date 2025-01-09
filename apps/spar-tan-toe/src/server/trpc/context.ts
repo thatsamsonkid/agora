@@ -1,6 +1,6 @@
-import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr'
-import type { inferAsyncReturnType } from '@trpc/server'
-import { type H3Event, getHeaders, getRequestHeader } from 'h3'
+import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr';
+import type { inferAsyncReturnType } from '@trpc/server';
+import { getHeaders, getRequestHeader, type H3Event } from 'h3';
 /**
  * Creates context for an incoming request
  * @link https://trpc.io/docs/context
@@ -21,33 +21,36 @@ import { type H3Event, getHeaders, getRequestHeader } from 'h3'
 // }
 
 export async function createContext(event: H3Event) {
-	const authorization = getRequestHeader(event, 'authorization')
+	const authorization = getRequestHeader(event, 'authorization');
 	const supabase = createServerClient(import.meta.env.VITE_PROJECT_URL, import.meta.env.VITE_DATABASE_PUB_KEY, {
 		cookies: {
 			getAll() {
-				return parseCookieHeader(getHeaders(event).Cookie ?? '')
+				return parseCookieHeader(getHeaders(event).Cookie ?? '');
 			},
 			setAll(cookiesToSet) {
 				for (const cookie of cookiesToSet) {
-					event.context.res.appendHeader('Set-Cookie', serializeCookieHeader(cookie.name, cookie.value, cookie.options))
+					event.context.res.appendHeader(
+						'Set-Cookie',
+						serializeCookieHeader(cookie.name, cookie.value, cookie.options),
+					);
 				}
 			},
 		},
-	})
+	});
 
 	// const contextInner = await createContextInner({ supabase })
-	const authToken = authorization?.split(' ')[1]
-	const { data, error } = await supabase.auth.getUser(authToken)
+	const authToken = authorization?.split(' ')[1];
+	const { data, error } = await supabase.auth.getUser(authToken);
 
 	if (error) {
-		event.respondWith(new Response(''))
+		event.respondWith(new Response(''));
 	}
 
 	return {
 		isAuthed: authToken && authToken?.length > 0,
 		authToken: authToken,
 		supabase: data,
-	}
+	};
 }
 
-export type Context = inferAsyncReturnType<typeof createContext>
+export type Context = inferAsyncReturnType<typeof createContext>;

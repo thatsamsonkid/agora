@@ -1,23 +1,23 @@
-import { SupabaseAuth } from '@agora/supabase/auth'
-import { SupabaseClientService } from '@agora/supabase/core'
-import { DestroyRef, Injectable, type OnDestroy, computed, inject, signal } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { Router } from '@angular/router'
-import type { RealtimeChannel } from '@supabase/supabase-js'
-import { type Observable, catchError, firstValueFrom, map, of, take, tap } from 'rxjs'
-import { injectTrpcClient } from '../../../trpc-client'
-import type { GAME, GAME_STATUS } from '../types/game.types'
+import { SupabaseAuth } from '@agora/supabase/auth';
+import { SupabaseClientService } from '@agora/supabase/core';
+import { DestroyRef, Injectable, computed, inject, signal, type OnDestroy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
+import type { RealtimeChannel } from '@supabase/supabase-js';
+import { catchError, firstValueFrom, map, of, take, tap, type Observable } from 'rxjs';
+import { injectTrpcClient } from '../../../trpc-client';
+import type { GAME, GAME_STATUS } from '../types/game.types';
 
 interface GAME_STATE {
-	id: string | null
-	gameReady: boolean
-	status: GAME_STATUS
-	playerTurn: boolean
-	playerOne: string | null
-	playerTwo: string | null
-	playerOneSymbol: string | null
-	playerTwoSymbol: string | null
-	gameboard: Array<Array<string | null>>
+	id: string | null;
+	gameReady: boolean;
+	status: GAME_STATUS;
+	playerTurn: boolean;
+	playerOne: string | null;
+	playerTwo: string | null;
+	playerOneSymbol: string | null;
+	playerTwoSymbol: string | null;
+	gameboard: Array<Array<string | null>>;
 }
 
 // interface PLAYER_SYMBOL = "X"
@@ -26,14 +26,14 @@ interface GAME_STATE {
 	providedIn: 'root',
 })
 export class GameManagerService implements OnDestroy {
-	private readonly _supabase = inject(SupabaseClientService)
-	private readonly _authService = inject(SupabaseAuth)
-	private readonly _router = inject(Router)
-	private readonly _trpc = injectTrpcClient()
-	private readonly _destroyRef = inject(DestroyRef)
+	private readonly _supabase = inject(SupabaseClientService);
+	private readonly _authService = inject(SupabaseAuth);
+	private readonly _router = inject(Router);
+	private readonly _trpc = injectTrpcClient();
+	private readonly _destroyRef = inject(DestroyRef);
 
-	public gameChannel!: RealtimeChannel
-	public gameMovesChannel!: RealtimeChannel
+	public gameChannel!: RealtimeChannel;
+	public gameMovesChannel!: RealtimeChannel;
 
 	public game = signal<GAME_STATE>({
 		id: null,
@@ -49,44 +49,44 @@ export class GameManagerService implements OnDestroy {
 			[null, null, null],
 			[null, null, null],
 		],
-	})
+	});
 
-	private initialGameSetup = signal(false)
+	private initialGameSetup = signal(false);
 
-	public gameId = computed(() => this.game().id)
-	public gameboard = computed(() => this.game().gameboard)
+	public gameId = computed(() => this.game().id);
+	public gameboard = computed(() => this.game().gameboard);
 
-	private isPlayerOne = computed(() => this.playerOne() === this._authService.userId())
+	private isPlayerOne = computed(() => this.playerOne() === this._authService.userId());
 
 	// We would create a symbol mapper
 	public symbolMap = new Map([
 		['0', 'O'],
 		['1', 'X'],
-	])
+	]);
 	public playerOneSymbol = computed(() => {
-		const playerOneSymbol = this.game().playerOneSymbol
+		const playerOneSymbol = this.game().playerOneSymbol;
 		if (!playerOneSymbol) {
-			return null
+			return null;
 		}
-		return this.symbolMap.get(playerOneSymbol)
-	})
+		return this.symbolMap.get(playerOneSymbol);
+	});
 	public playerTwoSymbol = computed(() => {
-		const playerTwoSymbol = this.game().playerOneSymbol
+		const playerTwoSymbol = this.game().playerOneSymbol;
 		if (!playerTwoSymbol) {
-			return null
+			return null;
 		}
-		return this.symbolMap.get(playerTwoSymbol)
-	})
+		return this.symbolMap.get(playerTwoSymbol);
+	});
 	// public playerSymbol = computed(() => (this.isPlayerOne() ? this.playerOneSymbol() : this.playerTwoSymbol()))
 	// public oppSymbol = computed(() => (this.isPlayerOne() ? this.playerTwoSymbol() : this.playerOneSymbol()))
-	public playerSymbol = computed(() => (this.isPlayerOne() ? 'X' : 'O'))
-	public oppSymbol = computed(() => (this.isPlayerOne() ? 'O' : 'X'))
+	public playerSymbol = computed(() => (this.isPlayerOne() ? 'X' : 'O'));
+	public oppSymbol = computed(() => (this.isPlayerOne() ? 'O' : 'X'));
 
-	public playerOne = computed(() => this.game().playerOne)
-	public playerTwo = computed(() => this.game().playerTwo)
-	public moves = signal([])
+	public playerOne = computed(() => this.game().playerOne);
+	public playerTwo = computed(() => this.game().playerTwo);
+	public moves = signal([]);
 
-	public isSpectator = signal(false)
+	public isSpectator = signal(false);
 
 	private winningCombos = [
 		// Horizontal rows (all share the same y)
@@ -134,7 +134,7 @@ export class GameManagerService implements OnDestroy {
 			{ y: 1, x: 1 },
 			{ y: 2, x: 0 },
 		], // Top-right to bottom-left
-	]
+	];
 
 	public startNewGame(): Observable<{ id: string }> {
 		return this._trpc.game.create.mutate().pipe(
@@ -149,10 +149,10 @@ export class GameManagerService implements OnDestroy {
 					status: game?.game_status ?? state.status,
 					playerOneSymbol: 'X',
 					playerTwoSymbol: 'O',
-				}))
-				this.createSupabaseChannel(game?.id)
+				}));
+				this.createSupabaseChannel(game?.id);
 			}),
-		)
+		);
 	}
 
 	/**
@@ -164,19 +164,19 @@ export class GameManagerService implements OnDestroy {
 	 * @param gameId
 	 */
 	public async connectToGame(gameId: string | null): Promise<void> {
-		console.log('connectin to game...')
+		console.log('connectin to game...');
 		try {
 			if (!gameId) {
-				throw Error('Game not found')
+				throw Error('Game not found');
 			}
 
-			const { data: game, error } = await firstValueFrom(this.findGame(gameId))
+			const { data: game, error } = await firstValueFrom(this.findGame(gameId));
 
 			if (error && !game) {
-				throw Error('Game not found')
+				throw Error('Game not found');
 			}
 
-			console.log('GAME FOUND', game)
+			console.log('GAME FOUND', game);
 
 			// we have a duplicate of this in start new game
 			this.game.update((state) => ({
@@ -187,30 +187,30 @@ export class GameManagerService implements OnDestroy {
 				status: game?.game_status ?? state.status,
 				playerOneSymbol: 'X',
 				playerTwoSymbol: 'O',
-			}))
+			}));
 
 			// Start listening to changes in game state
-			this.createSupabaseChannel(gameId)
+			this.createSupabaseChannel(gameId);
 
 			// Check if game is joinable and attempt to join as player
 			if (game && this.isGameJoinable(game)) {
 				// Game is joinable
-				await this.joinGameAsPlayer(gameId)
+				await this.joinGameAsPlayer(gameId);
 			}
 
 			if (!this.isPlayerInGame()) {
-				this.isSpectator.set(true)
+				this.isSpectator.set(true);
 			}
 
 			// If game already exist, check for all made moves and load them to board
 			await firstValueFrom(
 				this.loadGameMoves(gameId).pipe(
 					tap(({ data: gameMoves }) => {
-						console.log(gameMoves?.length)
-						console.log('isPlayerOne', this.isPlayerOne())
+						console.log(gameMoves?.length);
+						console.log('isPlayerOne', this.isPlayerOne());
 						if (gameMoves?.length) {
 							for (let i = 0; i < gameMoves.length; i++) {
-								console.log(gameMoves?.[i]?.column, gameMoves?.[i]?.row)
+								console.log(gameMoves?.[i]?.column, gameMoves?.[i]?.row);
 								if (this.isNonNegativeNumber(gameMoves?.[i]?.column) && this.isNonNegativeNumber(gameMoves?.[i]?.row)) {
 									// TODO: Instead of this which is too many for loops
 									// for bulk update of the table lets create a map
@@ -218,47 +218,47 @@ export class GameManagerService implements OnDestroy {
 									// const playerSymbol = this.playerSymbol()
 									// const oppSymbol = playerSymbol === 'X' ? 'O' : 'X'
 
-									const isPlayerMove = gameMoves[i].player_id === this._authService.userId()
+									const isPlayerMove = gameMoves[i].player_id === this._authService.userId();
 
-									const symbol = isPlayerMove ? this.playerSymbol() : this.oppSymbol()
+									const symbol = isPlayerMove ? this.playerSymbol() : this.oppSymbol();
 
-									console.log(symbol)
-									this.updateGameboard(gameMoves[i].row as number, gameMoves[i].column as number, symbol)
+									console.log(symbol);
+									this.updateGameboard(gameMoves[i].row as number, gameMoves[i].column as number, symbol);
 								}
 							}
 
 							// save moves up till now
-							this.moves.set(gameMoves)
+							this.moves.set(gameMoves);
 
 							// last move
 							if (gameMoves[gameMoves.length - 1].player_id !== this._authService.userId()) {
-								this.game.update((state) => ({ ...state, playerTurn: true }))
+								this.game.update((state) => ({ ...state, playerTurn: true }));
 							}
 
-							const lol = this.checkForWinner(this.game().gameboard)
-							console.log('Winner', lol)
+							const lol = this.checkForWinner(this.game().gameboard);
+							console.log('Winner', lol);
 						} else if (this.isPlayerOne()) {
-							this.game.update((state) => ({ ...state, playerTurn: true }))
+							this.game.update((state) => ({ ...state, playerTurn: true }));
 						}
 					}),
 				),
-			)
+			);
 		} catch (e: unknown) {
 			this._router.navigate(['/'], {
 				state: { error: `Failed to fetch item, because  ${e}` },
-			})
+			});
 		}
 	}
 
 	public async joinGameAsPlayer(gameId: string): Promise<void> {
-		const { data: game, error } = await firstValueFrom(this.joinGame(gameId))
+		const { data: game, error } = await firstValueFrom(this.joinGame(gameId));
 		if (error && !game) {
-			throw Error('Unable to join game')
+			throw Error('Unable to join game');
 		}
 	}
 
 	public isPlayerInGame(): boolean {
-		return this.playerOne() === this._authService.userId() || this.playerTwo() === this._authService.userId()
+		return this.playerOne() === this._authService.userId() || this.playerTwo() === this._authService.userId();
 	}
 
 	/**
@@ -266,7 +266,7 @@ export class GameManagerService implements OnDestroy {
 	 * @param gameId
 	 */
 	public createSupabaseChannel(gameId: string): void {
-		console.log('createSupabaseChannel + game')
+		console.log('createSupabaseChannel + game');
 		try {
 			this.gameChannel = this._supabase.client
 				.channel(gameId)
@@ -281,20 +281,23 @@ export class GameManagerService implements OnDestroy {
 					(payload) => {
 						// console.log('Game Table Change', payload)
 						if (!this.initialGameSetup()) {
-							this.initialGameSetup.set(true)
-							const isPlayerOne = payload.new.player_1 === this._authService.userId()
+							this.initialGameSetup.set(true);
+							const isPlayerOne = payload.new.player_1 === this._authService.userId();
 							this.game.update((state) => ({
 								...state,
 								playerTurn: isPlayerOne, //for now player one will always go first
 								playerOneSymbol: 'X',
 								playerTwoSymbol: 'O',
-							}))
+							}));
 						} else {
-							this.game.update((state) => ({ ...state, status: payload.new.game_status }))
+							this.game.update((state) => ({
+								...state,
+								status: payload.new.game_status,
+							}));
 						}
 					},
 				)
-				.subscribe()
+				.subscribe();
 
 			this.gameMovesChannel = this._supabase.client
 				.channel(`${gameId}_moves`)
@@ -309,56 +312,56 @@ export class GameManagerService implements OnDestroy {
 					(payload) => {
 						// console.log('Moves Table Change', payload)
 						if (this._authService.user()?.id === payload.new.player_id) {
-							this.game.update((state) => ({ ...state, playerTurn: false }))
+							this.game.update((state) => ({ ...state, playerTurn: false }));
 						} else {
-							this.game.update((state) => ({ ...state, playerTurn: true }))
+							this.game.update((state) => ({ ...state, playerTurn: true }));
 						}
 
 						if (!this.game().gameboard[payload.new.row][payload.new.column]) {
-							const isPlayerMove = payload.new.player_id === this._authService.userId()
-							const symbol = isPlayerMove ? this.playerSymbol() : this.oppSymbol()
-							this.updateGameboard(payload.new.row, payload.new.column, symbol)
+							const isPlayerMove = payload.new.player_id === this._authService.userId();
+							const symbol = isPlayerMove ? this.playerSymbol() : this.oppSymbol();
+							this.updateGameboard(payload.new.row, payload.new.column, symbol);
 						}
 
-						const lol = this.checkForWinner(this.game().gameboard)
-						console.log('Winner', lol)
+						const lol = this.checkForWinner(this.game().gameboard);
+						console.log('Winner', lol);
 					},
 				)
-				.subscribe()
+				.subscribe();
 		} catch (e) {
-			console.error(e)
+			console.error(e);
 		}
 	}
 
 	public takeTurn({ x, y }: { x: number; y: number }) {
-		this.updateMovesTable(x, y)
+		this.updateMovesTable(x, y);
 	}
 
 	private joinGame(gameId: string): Observable<{ data: GAME | null; error: any | null }> {
 		return this._trpc.game.join.mutate({ gameId: gameId }).pipe(
 			map((response) => {
 				if (!response?.[0]?.id) {
-					throw new Error('Game not found')
+					throw new Error('Game not found');
 				}
-				return { data: response[0], error: null }
+				return { data: response[0], error: null };
 			}),
 			catchError(() => of({ data: null, error: 'Game not found' })),
-		)
+		);
 	}
 
 	private findGame(gameId: string): Observable<{
-		data: GAME | null
-		error: string | null
+		data: GAME | null;
+		error: string | null;
 	}> {
 		return this._trpc.game.select.query({ id: gameId }).pipe(
 			map((response) => {
 				if (!response?.[0]?.id) {
-					throw new Error('Game not found')
+					throw new Error('Game not found');
 				}
-				return { data: response[0], error: null }
+				return { data: response[0], error: null };
 			}),
 			catchError(() => of({ data: null, error: 'Game not found' })),
-		)
+		);
 	}
 
 	private loadGameMoves(gameId: string): Observable<{ data: any; error: string | null }> {
@@ -366,12 +369,12 @@ export class GameManagerService implements OnDestroy {
 			take(1),
 			map((response) => {
 				if (!(response?.length > 0)) {
-					throw new Error('No moves found for game')
+					throw new Error('No moves found for game');
 				}
-				return { data: response, error: null }
+				return { data: response, error: null };
 			}),
 			catchError(() => of({ data: null, error: 'No moves for game id found' })),
-		)
+		);
 	}
 
 	private updateGameboard(x: number, y: number, playerSymbol?: 'X' | 'O'): (string | null)[][] {
@@ -379,12 +382,12 @@ export class GameManagerService implements OnDestroy {
 		// console.log(y)
 		// console.log(playerSymbol)
 		//@ts-ignore
-		const nextGameState = this.update2DArray(this.gameboard(), x, y, playerSymbol || this.playerSymbol())
+		const nextGameState = this.update2DArray(this.gameboard(), x, y, playerSymbol || this.playerSymbol());
 		this.game.update((state) => ({
 			...state,
 			gameboard: nextGameState,
-		}))
-		return nextGameState
+		}));
+		return nextGameState;
 	}
 
 	private update2DArray(originalArray: (string | null)[][], rowIndex: number, colIndex: number, newValue: string) {
@@ -392,16 +395,16 @@ export class GameManagerService implements OnDestroy {
 		const newArray = originalArray.map((row, index) => {
 			// Clone each row
 			if (index === rowIndex) {
-				return [...row.slice(0, colIndex), newValue, ...row.slice(colIndex + 1)]
+				return [...row.slice(0, colIndex), newValue, ...row.slice(colIndex + 1)];
 			}
-			return [...row]
-		})
-		return newArray
+			return [...row];
+		});
+		return newArray;
 	}
 
 	private updateMovesTable(x: number, y: number): void {
-		const gameId = this.gameId()
-		const playerId = this._authService.session()?.user.id
+		const gameId = this.gameId();
+		const playerId = this._authService.session()?.user.id;
 		if (playerId && gameId) {
 			this._trpc.moves.create
 				.mutate({
@@ -412,30 +415,30 @@ export class GameManagerService implements OnDestroy {
 					symbol: 0,
 				})
 				.pipe(take(1), takeUntilDestroyed(this._destroyRef))
-				.subscribe()
+				.subscribe();
 		}
 	}
 
 	private checkForWinner(board: Array<Array<string | null>>): string | null {
 		for (const combo of this.winningCombos) {
-			const [a, b, c] = combo
+			const [a, b, c] = combo;
 
-			const valA = board[a.y][a.x]
-			const valB = board[b.y][b.x]
-			const valC = board[c.y][c.x]
+			const valA = board[a.y][a.x];
+			const valB = board[b.y][b.x];
+			const valC = board[c.y][c.x];
 
 			// If all three positions are the same and not null => winner
 			if (valA && valA === valB && valB === valC) {
-				return valA // 'X' or 'O'
+				return valA; // 'X' or 'O'
 			}
 		}
 
 		// No winning combo found
-		return null
+		return null;
 	}
 
 	private isGameJoinable({ game_status = 'queued', player_1 = null, player_2 = null }: GAME): boolean {
-		return game_status === 'queued' && (!player_1 || !player_2)
+		return game_status === 'queued' && (!player_1 || !player_2);
 	}
 
 	private isNonNegativeNumber(value: unknown) {
@@ -443,16 +446,16 @@ export class GameManagerService implements OnDestroy {
 			typeof value === 'number' && // Must be a number (excludes null, undefined, etc.)
 			Number.isFinite(value) && // Excludes NaN, Infinity, -Infinity
 			value >= 0 // Allows 0 and all positive numbers
-		)
+		);
 	}
 
 	ngOnDestroy(): void {
 		if (this.gameChannel) {
-			this.gameChannel.unsubscribe()
+			this.gameChannel.unsubscribe();
 		}
 
 		if (this.gameMovesChannel) {
-			this.gameMovesChannel.unsubscribe()
+			this.gameMovesChannel.unsubscribe();
 		}
 	}
 }

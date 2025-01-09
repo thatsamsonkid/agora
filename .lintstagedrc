@@ -1,1 +1,4 @@
-{ "**/*.{js,ts,css,scss,html,json,md,yml}": "oxlint", "**/*.{js,ts,css,scss,html,json}": "biome check" }
+{
+  "**/*.{js,ts,css,scss,html,json,md,yml}": "pnpm run lint",
+  "**/*.{js,ts,css,scss,html,json}": "pnpm run format"
+}

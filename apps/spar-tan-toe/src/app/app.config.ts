@@ -1,12 +1,12 @@
-import { provideFileRouter } from '@analogjs/router'
-import { provideHttpClient, withFetch } from '@angular/common/http'
-import { type ApplicationConfig, provideExperimentalZonelessChangeDetection } from '@angular/core'
-import { provideClientHydration } from '@angular/platform-browser'
+import { provideFileRouter } from '@analogjs/router';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideExperimentalZonelessChangeDetection, type ApplicationConfig } from '@angular/core';
+import { provideClientHydration } from '@angular/platform-browser';
 
-import { ScriptLoaderService } from '@agora/script-loader'
-import { GOOGLE_CLIENT_ID, GOOGLE_INIT_OPTIONS, GoogleAuthService, SupabaseAuth } from '@agora/supabase/auth'
-import { SUPABASE_PROJECT, SUPABASE_PUB_KEY, SupabaseClientService } from '@agora/supabase/core'
-import { provideTrpcClient } from '../trpc-client'
+import { ScriptLoaderService } from '@agora/script-loader';
+import { GOOGLE_CLIENT_ID, GOOGLE_INIT_OPTIONS, GoogleAuthService, SupabaseAuth } from '@agora/supabase/auth';
+import { SUPABASE_PROJECT, SUPABASE_PUB_KEY, SupabaseClientService } from '@agora/supabase/core';
+import { provideTrpcClient } from '../trpc-client';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -31,4 +31,4 @@ export const appConfig: ApplicationConfig = {
 		},
 		{ provide: GOOGLE_INIT_OPTIONS, useValue: {} },
 	],
-}
+};

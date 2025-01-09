@@ -1,13 +1,13 @@
-import { relations } from 'drizzle-orm/relations'
-import { authUsers } from 'drizzle-orm/supabase'
-import { game, leaderboard, moves, profile } from './schema'
+import { relations } from 'drizzle-orm/relations';
+import { authUsers } from 'drizzle-orm/supabase';
+import { game, leaderboard, moves, profile } from './schema';
 
 export const leaderboardRelations = relations(leaderboard, ({ one }) => ({
 	profile: one(profile, {
 		fields: [leaderboard.player_id],
 		references: [profile.id],
 	}),
-}))
+}));
 
 export const profileRelations = relations(profile, ({ one, many }) => ({
 	leaderboards: many(leaderboard),
@@ -22,11 +22,11 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
 		relationName: 'game_player2_profile_id',
 	}),
 	moves: many(moves),
-}))
+}));
 
 export const usersInAuthRelations = relations(authUsers, ({ many }) => ({
 	profiles: many(profile),
-}))
+}));
 
 export const gameRelations = relations(game, ({ one }) => ({
 	profile_player1: one(profile, {
@@ -39,11 +39,11 @@ export const gameRelations = relations(game, ({ one }) => ({
 		references: [profile.id],
 		relationName: 'game_player2_profile_id',
 	}),
-}))
+}));
 
 export const movesRelations = relations(moves, ({ one }) => ({
 	profile: one(profile, {
 		fields: [moves.player_id],
 		references: [profile.id],
 	}),
-}))
+}));
