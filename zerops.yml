@@ -2,14 +2,14 @@ zerops:
   - setup: spartantoe
     build:
       base: nodejs@22
-        envVariables:
-          NODE_ENV: production
-          DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-          VITE_PROJECT_URL: ${VITE_PROJECT_URL}
-          VITE_DATABASE_REF: ${VITE_DATABASE_REF}
-          VITE_DATABASE_PUB_KEY: ${VITE_DATABASE_PUB_KEY}
-          DATABASE_URL: ${DATABASE_URL}
-          VITE_GOOGLE_AUTH_CLIENT_ID: ${VITE_GOOGLE_AUTH_CLIENT_ID}
+      envVariables:
+        NODE_ENV: production
+        DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+        VITE_PROJECT_URL: ${VITE_PROJECT_URL}
+        VITE_DATABASE_REF: ${VITE_DATABASE_REF}
+        VITE_DATABASE_PUB_KEY: ${VITE_DATABASE_PUB_KEY}
+        DATABASE_URL: ${DATABASE_URL}
+        VITE_GOOGLE_AUTH_CLIENT_ID: ${VITE_GOOGLE_AUTH_CLIENT_ID}
       buildCommands:
         - pnpm i
         - npx nx build spar-tan-toe
@@ -17,14 +17,14 @@ zerops:
         - dist/apps/spar-tan-toe/analog/~
     run:
       base: nodejs@22
-        envVariables:
-          NODE_ENV: production
-          DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-          VITE_PROJECT_URL: ${VITE_PROJECT_URL}
-          VITE_DATABASE_REF: ${VITE_DATABASE_REF}
-          VITE_DATABASE_PUB_KEY: ${VITE_DATABASE_PUB_KEY}
-          DATABASE_URL: ${DATABASE_URL}
-          VITE_GOOGLE_AUTH_CLIENT_ID: ${VITE_GOOGLE_AUTH_CLIENT_ID}
+      envVariables:
+        NODE_ENV: production
+        DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+        VITE_PROJECT_URL: ${VITE_PROJECT_URL}
+        VITE_DATABASE_REF: ${VITE_DATABASE_REF}
+        VITE_DATABASE_PUB_KEY: ${VITE_DATABASE_PUB_KEY}
+        DATABASE_URL: ${DATABASE_URL}
+        VITE_GOOGLE_AUTH_CLIENT_ID: ${VITE_GOOGLE_AUTH_CLIENT_ID}
       ports:
         - port: 3000
           httpSupport: true
