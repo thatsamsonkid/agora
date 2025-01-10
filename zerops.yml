@@ -3,7 +3,6 @@ zerops:
     build:
       base: nodejs@22
       envVariables:
-        NODE_ENV: production
         DATABASE_PASSWORD: ${PROJECT_DATABASE_PASSWORD}
         VITE_PROJECT_URL: ${PROJECT_VITE_PROJECT_URL}
         VITE_DATABASE_REF: ${PROJECT_VITE_DATABASE_REF}
@@ -18,7 +17,6 @@ zerops:
     run:
       base: nodejs@22
       envVariables:
-        NODE_ENV: production
         DATABASE_PASSWORD: ${PROJECT_DATABASE_PASSWORD}
         VITE_PROJECT_URL: ${PROJECT_VITE_PROJECT_URL}
         VITE_DATABASE_REF: ${PROJECT_VITE_DATABASE_REF}
