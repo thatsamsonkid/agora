@@ -1,4 +1,0 @@
-{
-	"**/*.{js,ts,css,scss,html,json,md,yml}": "npx nx run-many --target=lint --parallel",
-	"**/*.{js,ts,css,scss,html,json}": "npx nx format --write"
-}
