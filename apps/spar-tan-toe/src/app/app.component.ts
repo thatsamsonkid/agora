@@ -13,6 +13,7 @@ export class AppComponent {
 	private readonly _authService = inject(SupabaseAuth);
 
 	// Consider moving into a service, unfortunate authService is in lib here
+
 	constructor() {
 		effect(
 			() =>
