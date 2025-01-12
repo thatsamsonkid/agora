@@ -45,7 +45,7 @@ export const game = pgTable(
 		created_at: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 		player_1: uuid('player_1').references(() => profile.id),
 		player_2: uuid('player_2').references(() => profile.id),
-		game_status: gameStatusEnum().notNull(),
+		game_status: gameStatusEnum().default('queued').notNull(),
 		player1Symbol: text('player_1_symbol').default('default-player-1.svg').notNull(),
 		player2Symbol: text('player_2_symbol').default('default-player-2.svg').notNull(),
 	},
