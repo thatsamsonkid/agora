@@ -288,6 +288,7 @@ export class GameManagerService implements OnDestroy {
 								playerTurn: isPlayerOne, //for now player one will always go first
 								playerOneSymbol: 'X',
 								playerTwoSymbol: 'O',
+								status: payload.new.game_status,
 							}));
 						} else {
 							this.game.update((state) => ({
