@@ -131,10 +131,10 @@ export class GameManagerService implements OnDestroy {
 		], // Top-right to bottom-left
 	];
 
-	public startNewGame(): Observable<{ id: string }> {
+	public startNewGame(): Observable<{ data: GAME; error: any }> {
 		return this._trpc.game.create.mutate().pipe(
 			take(1),
-			tap((game) => {
+			tap(({ data: game }) => {
 				// this.game.update((state) => ({ ...state, id }))
 				this.game.update((state) => ({
 					...state,

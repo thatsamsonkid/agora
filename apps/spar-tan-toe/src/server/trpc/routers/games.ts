@@ -5,92 +5,53 @@ import { db } from '../../db/db';
 import { game } from '../../db/schema';
 import { authProcedure, publicProcedure, router } from '../trpc';
 
-//Interesting concept
-// async ({ input }) => {
-// 	const { data, error } = await supabase.rpc('create_record', { data: input })
-// 	if (error) {
-// 		throw new Error(error.message)
-// 	}
-
-// 	return data
-// 	// Return the response data
-// },
+async function executeDbOperation(operation: () => Promise<any>, errorMsg: string) {
+	try {
+		const result = await operation();
+		if (!result || result.length === 0) {
+			throw new Error(errorMsg);
+		}
+		return result;
+	} catch (error) {
+		console.error(error);
+		throw new TRPCError({
+			code: 'INTERNAL_SERVER_ERROR',
+			message: errorMsg,
+			cause: error,
+		});
+	}
+}
 
 export const gameRouter = router({
 	create: authProcedure.mutation(async ({ ctx }) => {
-		try {
-			if (!ctx.supabase?.user) {
-				throw new Error('Unauthenticated');
-			}
-			const newGame = (
-				await db
-					.insert(game)
-					.values({ player_1: ctx.supabase.user?.id } as any)
-					.returning()
-			).at(0);
-
-			console.log(newGame);
-
-			if (!newGame) {
-				throw new Error('Failed to create a new game');
-			}
-			return newGame;
-		} catch (error) {
-			console.error(error);
-			throw new TRPCError({
-				code: 'INTERNAL_SERVER_ERROR',
-				message: 'An unexpected error occurred, please try again later.',
-				cause: error,
-			});
+		if (!ctx.supabase?.user) {
+			throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthenticated' });
 		}
+		return executeDbOperation(
+			() => db.insert(game).values({ player_1: ctx.supabase.user?.id }).returning(),
+			'Failed to create a new game',
+		).then((result) => result[0]);
 	}),
-	join: authProcedure
-		.input(
-			z.object({
-				gameId: z.string(),
-			}),
-		)
-		.mutation(async ({ ctx, input }) => {
-			const joinedGame = await db
-				.update(game)
-				.set({ id: input.gameId, player_2: ctx.supabase.user?.id })
-				.where(eq(game.id, input.gameId))
-				.returning();
-			if (!joinedGame) {
-				throw new TRPCError({
-					code: 'INTERNAL_SERVER_ERROR',
-					message: 'An unexpected error occurred, please try again later.',
-				});
-			}
-			return joinedGame;
-		}),
+	join: authProcedure.input(z.object({ gameId: z.string() })).mutation(async ({ ctx, input }) => {
+		return executeDbOperation(
+			() => db.update(game).set({ player_2: ctx.supabase.user?.id }).where(eq(game.id, input.gameId)).returning(),
+			'Failed to join the game',
+		).then((result) => result[0]);
+	}),
 	updateWinner: authProcedure
-		.input(
-			z.object({
-				gameId: z.string(),
-				winnerId: z.string(),
-			}),
-		)
+		.input(z.object({ gameId: z.string(), winnerId: z.string() }))
 		.mutation(async ({ input }) => {
-			const updatedGame = await db
-				.update(game)
-				.set({ winner: input.winnerId, game_status: 'complete' })
-				.where(eq(game.id, input.gameId))
-				.returning();
-
-			if (!updatedGame) {
-				throw new TRPCError({
-					code: 'INTERNAL_SERVER_ERROR',
-					message: 'An unexpected error occurred while updating the winner.',
-				});
-			}
-			return updatedGame;
+			return executeDbOperation(
+				() =>
+					db
+						.update(game)
+						.set({ winner: input.winnerId, game_status: 'complete' })
+						.where(eq(game.id, input.gameId))
+						.returning(),
+				'Failed to update the winner',
+			).then((result) => result[0]);
 		}),
-	select: publicProcedure
-		.input(
-			z.object({
-				id: z.string(),
-			}),
-		)
-		.query(async ({ input }) => await db.select().from(game).where(eq(game.id, input.id))),
+	select: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+		return executeDbOperation(() => db.select().from(game).where(eq(game.id, input.id)), 'Failed to select the game');
+	}),
 });
