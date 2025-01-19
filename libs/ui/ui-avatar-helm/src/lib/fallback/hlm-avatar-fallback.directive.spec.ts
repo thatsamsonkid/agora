@@ -1,5 +1,5 @@
 import { Component, PLATFORM_ID } from '@angular/core';
-import { TestBed, fakeAsync, type ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { hexColorFor, isBright } from '@spartan-ng/ui-avatar-brain';
 import { HlmAvatarFallbackDirective } from './hlm-avatar-fallback.directive';
 
@@ -21,9 +21,7 @@ describe('HlmAvatarFallbackDirective', () => {
 	let fixture: ComponentFixture<HlmMockComponent>;
 
 	beforeEach(() => {
-		fixture = TestBed.overrideProvider(PLATFORM_ID, {
-			useValue: 'browser',
-		}).createComponent(HlmMockComponent);
+		fixture = TestBed.overrideProvider(PLATFORM_ID, { useValue: 'browser' }).createComponent(HlmMockComponent);
 		component = fixture.componentInstance;
 	});
 

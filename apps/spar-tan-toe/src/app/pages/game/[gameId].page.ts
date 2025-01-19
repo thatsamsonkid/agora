@@ -1,7 +1,7 @@
 import { SupabaseAuth } from '@agora/supabase/auth';
 import type { RouteMeta } from '@analogjs/router';
-import { JsonPipe } from '@angular/common';
-import { Component, computed, inject, type OnInit } from '@angular/core';
+import { isPlatformBrowser, JsonPipe } from '@angular/common';
+import { Component, computed, inject, PlatformRef, type OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, take } from 'rxjs';
 import { GameboardCellComponent } from '../../components/gameboard-cell.component';
@@ -50,6 +50,7 @@ export default class GameIdPageComponent implements OnInit {
 	private readonly _route = inject(ActivatedRoute);
 	private readonly _auth = inject(SupabaseAuth);
 	private readonly _gameManager = inject(GameManagerService);
+	private readonly _platform = inject(PlatformRef);
 
 	private readonly _gameId$ = this._route.paramMap.pipe(map((params) => params.get('gameId')));
 
@@ -67,7 +68,7 @@ export default class GameIdPageComponent implements OnInit {
 	protected readonly playerSymbol = this._gameManager.playerSymbol;
 
 	ngOnInit(): void {
-		if (!this._gameManager.gameChannel) {
+		if (!this._gameManager.gameChannel && isPlatformBrowser(this._platform)) {
 			this._gameId$
 				.pipe(
 					take(1),

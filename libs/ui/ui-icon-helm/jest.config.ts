@@ -1,8 +1,8 @@
 export default {
 	displayName: 'ui-icon-helm',
-	preset: '../../../jest.preset.js',
+	preset: '../../jest.preset.js',
 	setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-	coverageDirectory: '../../../coverage/libs/ui/ui-icon-helm',
+	coverageDirectory: '../../coverage/libs/ui/ui-icon-helm',
 	transform: {
 		'^.+\\.(ts|mjs|js|html)$': [
 			'jest-preset-angular',

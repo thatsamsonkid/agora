@@ -1,8 +1,8 @@
 export default {
 	displayName: 'ui-spinner-helm',
-	preset: '../../../jest.preset.js',
+	preset: '../../jest.preset.js',
 	setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-	coverageDirectory: '../../../coverage/libs/ui/ui-spinner-helm',
+	coverageDirectory: '../../coverage/libs/ui/ui-spinner-helm',
 	transform: {
 		'^.+\\.(ts|mjs|js|html)$': [
 			'jest-preset-angular',

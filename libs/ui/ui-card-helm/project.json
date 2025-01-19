@@ -1,10 +1,10 @@
 {
 	"name": "ui-card-helm",
-	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
 	"sourceRoot": "libs/ui/ui-card-helm/src",
 	"prefix": "hlm",
-	"tags": [],
 	"projectType": "library",
+	"tags": [],
 	"targets": {
 		"build": {
 			"executor": "@nx/angular:ng-packagr-lite",
@@ -28,6 +28,9 @@
 			"options": {
 				"jestConfig": "libs/ui/ui-card-helm/jest.config.ts"
 			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint"
 		}
 	}
 }

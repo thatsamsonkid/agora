@@ -29,11 +29,14 @@ export const gameRouter = router({
 					.returning()
 			).at(0);
 
+			console.log(newGame);
+
 			if (!newGame) {
 				throw new Error('Failed to create a new game');
 			}
 			return newGame;
 		} catch (error) {
+			console.error(error);
 			throw new TRPCError({
 				code: 'INTERNAL_SERVER_ERROR',
 				message: 'An unexpected error occurred, please try again later.',

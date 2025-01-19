@@ -21,13 +21,7 @@ export default defineConfig(({ mode }) => {
 			target: ['es2022'],
 		},
 		optimizeDeps: {
-			include: [
-				'@supabase/supabase-js',
-				'@spartan-ng/ui-core',
-				'class-variance-authority',
-				'@spartan-ng/ui-avatar-brain',
-				'ngx-sonner',
-			],
+			include: ['@supabase/supabase-js', '@spartan-ng/brain', 'class-variance-authority', 'ngx-sonner'],
 		},
 		resolve: {
 			mainFields: ['browser', 'module'],

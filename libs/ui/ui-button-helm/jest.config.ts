@@ -1,8 +1,8 @@
 export default {
-	displayName: 'ui-ui-button-helm',
-	preset: '../../../jest.preset.js',
+	displayName: 'ui-button-helm',
+	preset: '../../jest.preset.js',
 	setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-	coverageDirectory: '../../../coverage/libs/ui/ui-button-helm',
+	coverageDirectory: '../../coverage/libs/ui/ui-button-helm',
 	transform: {
 		'^.+\\.(ts|mjs|js|html)$': [
 			'jest-preset-angular',
