@@ -48,6 +48,7 @@ export const game = pgTable(
 		game_status: gameStatusEnum().default('queued').notNull(),
 		player1Symbol: text('player_1_symbol').default('default-player-1.svg').notNull(),
 		player2Symbol: text('player_2_symbol').default('default-player-2.svg').notNull(),
+		winner: uuid('winner').references(() => profile.id),
 	},
 	(table) => [
 		foreignKey({
@@ -59,6 +60,11 @@ export const game = pgTable(
 			columns: [table.player_2],
 			foreignColumns: [profile.id],
 			name: 'game_player_2_profile_id_fk',
+		}),
+		foreignKey({
+			columns: [table.winner],
+			foreignColumns: [profile.id],
+			name: 'game_winner_profile_id_fk',
 		}),
 	],
 );

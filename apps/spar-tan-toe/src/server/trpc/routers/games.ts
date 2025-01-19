@@ -61,6 +61,28 @@ export const gameRouter = router({
 			}
 			return joinedGame;
 		}),
+	updateWinner: authProcedure
+		.input(
+			z.object({
+				gameId: z.string(),
+				winnerId: z.string(),
+			}),
+		)
+		.mutation(async ({ input }) => {
+			const updatedGame = await db
+				.update(game)
+				.set({ winner: input.winnerId, game_status: 'complete' })
+				.where(eq(game.id, input.gameId))
+				.returning();
+
+			if (!updatedGame) {
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: 'An unexpected error occurred while updating the winner.',
+				});
+			}
+			return updatedGame;
+		}),
 	select: publicProcedure
 		.input(
 			z.object({

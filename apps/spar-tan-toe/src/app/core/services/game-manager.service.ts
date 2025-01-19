@@ -20,8 +20,6 @@ interface GAME_STATE {
 	gameboard: Array<Array<string | null>>;
 }
 
-// interface PLAYER_SYMBOL = "X"
-
 @Injectable({
 	providedIn: 'root',
 })
@@ -77,11 +75,8 @@ export class GameManagerService implements OnDestroy {
 		}
 		return this.symbolMap.get(playerTwoSymbol);
 	});
-	// public playerSymbol = computed(() => (this._isPlayerOne() ? this.playerOneSymbol() : this.playerTwoSymbol()))
-	// public oppSymbol = computed(() => (this._isPlayerOne() ? this.playerTwoSymbol() : this.playerOneSymbol()))
 	public playerSymbol = computed(() => (this._isPlayerOne() ? 'X' : 'O'));
 	public oppSymbol = computed(() => (this._isPlayerOne() ? 'O' : 'X'));
-
 	public playerOne = computed(() => this.game().playerOne);
 	public playerTwo = computed(() => this.game().playerTwo);
 	public moves = signal([]);
@@ -202,7 +197,6 @@ export class GameManagerService implements OnDestroy {
 				this.isSpectator.set(true);
 			}
 
-			// If game already exist, check for all made moves and load them to board
 			await firstValueFrom(
 				this.loadGameMoves(gameId).pipe(
 					tap(({ data: gameMoves }) => {
@@ -219,7 +213,6 @@ export class GameManagerService implements OnDestroy {
 									// const oppSymbol = playerSymbol === 'X' ? 'O' : 'X'
 
 									const isPlayerMove = gameMoves[i].player_id === this._authService.userId();
-
 									const symbol = isPlayerMove ? this.playerSymbol() : this.oppSymbol();
 
 									console.log(symbol);
@@ -227,16 +220,14 @@ export class GameManagerService implements OnDestroy {
 								}
 							}
 
-							// save moves up till now
 							this.moves.set(gameMoves);
 
-							// last move
 							if (gameMoves[gameMoves.length - 1].player_id !== this._authService.userId()) {
 								this.game.update((state) => ({ ...state, playerTurn: true }));
 							}
 
-							const lol = this.checkForWinner(this.game().gameboard);
-							console.log('Winner', lol);
+							const winner = this.checkForWinner(this.game().gameboard);
+							console.log('Winner', winner);
 						} else if (this._isPlayerOne()) {
 							this.game.update((state) => ({ ...state, playerTurn: true }));
 						}
@@ -279,13 +270,12 @@ export class GameManagerService implements OnDestroy {
 						filter: `id=eq.${gameId}`,
 					},
 					(payload) => {
-						// console.log('Game Table Change', payload)
 						if (!this._initialGameSetup()) {
 							this._initialGameSetup.set(true);
 							const isPlayerOne = payload.new.player_1 === this._authService.userId();
 							this.game.update((state) => ({
 								...state,
-								playerTurn: isPlayerOne, //for now player one will always go first
+								playerTurn: isPlayerOne,
 								playerOneSymbol: 'X',
 								playerTwoSymbol: 'O',
 								status: payload.new.game_status,
@@ -324,8 +314,11 @@ export class GameManagerService implements OnDestroy {
 							this.updateGameboard(payload.new.row, payload.new.column, symbol);
 						}
 
-						const lol = this.checkForWinner(this.game().gameboard);
-						console.log('Winner', lol);
+						const winner = this.checkForWinner(this.game().gameboard);
+						if (winner && winner === this._authService.userId()) {
+							// Make a TRPC call to update the game with the winner's ID
+							this._trpc.game.updateWinner.mutate({ gameId, winnerId: winner });
+						}
 					},
 				)
 				.subscribe();
@@ -388,9 +381,7 @@ export class GameManagerService implements OnDestroy {
 	}
 
 	private update2DArray(originalArray: (string | null)[][], rowIndex: number, colIndex: number, newValue: string) {
-		// Clone the array to maintain immutability
 		const newArray = originalArray.map((row, index) => {
-			// Clone each row
 			if (index === rowIndex) {
 				return [...row.slice(0, colIndex), newValue, ...row.slice(colIndex + 1)];
 			}
@@ -426,7 +417,7 @@ export class GameManagerService implements OnDestroy {
 
 			// If all three positions are the same and not null => winner
 			if (valA && valA === valB && valB === valC) {
-				return valA; // 'X' or 'O'
+				return valA === 'X' ? this.game().playerOne : this.game().playerTwo;
 			}
 		}
 
@@ -439,11 +430,7 @@ export class GameManagerService implements OnDestroy {
 	}
 
 	private isNonNegativeNumber(value: unknown) {
-		return (
-			typeof value === 'number' && // Must be a number (excludes null, undefined, etc.)
-			Number.isFinite(value) && // Excludes NaN, Infinity, -Infinity
-			value >= 0 // Allows 0 and all positive numbers
-		);
+		return typeof value === 'number' && Number.isFinite(value) && value >= 0;
 	}
 
 	ngOnDestroy(): void {
